@@ -1,27 +1,52 @@
 <resources>
     <string name="app_name">retake2324_student</string>
 
+
+    <!-- Menu STRINGS -->
+    <string name="title">APP²</string>
+
+
     <!-- SKILL STRINGS -->
-    <string name="component_name">component_placeholder</string>
-    <string name="skill_name">skill_placeholder</string>
+    <string name="component_name">component</string>
+    <string name="skill_name">skill</string>
     <string name="skill_description">This skill is used to evaluate the student on a specific task</string>
     <string name="skill_coefficient">0</string>
 
     <!-- GROUP OVERVIEW STRINGS -->
-    <string name="group_name">group_name_placeholder</string>
-    <string name="student_list">student_list_placeholder</string>
-    <string name="component_list">component_list_placeholder</string>
-    <string name="tutor_list">component_list_placeholder</string>
+    <string name="group_name">group_name</string>
+    <string-array name="student_list">
+        <item>Student_1</item>
+        <item>Student_2</item>
+        <item>Student_3</item>
+    </string-array>
+    <string-array name="component_list">
+        <item>Component_1</item>
+        <item>Component_2</item>
+        <item>Component_3</item>
+    </string-array>
+    <string-array name="tutor_list">
+        <item>Tutor_1</item>
+        <item>Tutor_2</item>
+        <item>Tutor_3</item>
+    </string-array>
 
     <!-- PROFILE VIEW STRINGS -->
-    <string name="first_name">first_name_placeholder</string>
-    <string name="last_name">last_name_placeholder</string>
-    <string name="email">email_placeholder</string>
-    <string name="role">role_placeholder</string>
-    <string name="photo_id">photo_id_placeholder</string>
-    <string name="group_name">group_name_placeholder</string>
-    <string name="email">email_placeholder</string>
-    <string name="role">role_placeholder</string>
+    <string name="first_name">first_name</string>
+    <string name="last_name">last_name</string>
+    <string name="role">role</string>
+    <string name="email">email</string>
+    <string name="photo_id">photo_id</string>
+    <!-- group name -->
+    <!-- component_list -->
+    <!-- tutor_list -->
+
+    <!-- REQUEST REASSESSMENT STRINGS -->
+    <!-- component_list -->
+    <string-array name="skill_list">
+        <item>Skill_1</item>
+        <item>Skill_2</item>
+        <item>Skill_3</item>
+    </string-array>
 
 
 </resources>

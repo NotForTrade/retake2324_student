@@ -13,6 +13,15 @@
         android:theme="@style/Theme.Retake2324_student"
         tools:targetApi="31">
         <activity
+            android:name=".RequestReassessmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false" />
+        <activity
             android:name=".GroupOverviewActivity"
             android:exported="false" />
         <activity
