@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Retake2324_student"
         tools:targetApi="31">
         <activity
+            android:name=".GroupOverviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SkillActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
