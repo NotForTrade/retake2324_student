@@ -9,13 +9,9 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class OverviewActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
-    private lateinit var drawerLayout: DrawerLayout
+class OverviewActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +20,13 @@ class OverviewActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navigationView: NavigationView = findViewById(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener(this)
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+
+        // Clear default selection
+//        bottomNavigationView.itemIconTintList = null
+
+
 
         val tableLayout: TableLayout = findViewById(R.id.tableLayout)
 
@@ -89,23 +89,20 @@ class OverviewActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_home -> {
+            R.id.DashboardFragment -> {
                 val intent = Intent(this, DashboardActivity::class.java)
                 startActivity(intent)
-                drawerLayout.closeDrawer(GravityCompat.START)
                 return true
             }
-            // Handle other menu items here
+            R.id.ProfileFragment -> {
+                // Handle Profile navigation
+                return true
+            }
+            R.id.LogoutFragment -> {
+                // Handle Logout navigation
+                return true
+            }
         }
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+        return false
     }
 }
