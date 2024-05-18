@@ -90,7 +90,8 @@ class SynthesisActivity : AppCompatActivity(), BottomNavigationView.OnNavigation
                 return true
             }
             R.id.ProfileFragment -> {
-                // Handle Profile navigation
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
                 return true
             }
             R.id.LogoutFragment -> {

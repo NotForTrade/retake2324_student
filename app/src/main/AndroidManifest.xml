@@ -28,7 +28,7 @@
             android:name=".RequestReassessmentActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileViewActivity"
+            android:name=".ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".GroupOverviewActivity"

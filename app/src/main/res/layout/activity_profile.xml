@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileViewActivity"
+    tools:context=".ProfileActivity"
     android:orientation="vertical">
 
     <LinearLayout
@@ -88,11 +88,5 @@
             />
 
     </LinearLayout>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="VIEW GRADES"
-        />
 
 </LinearLayout>
