@@ -3,14 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:gravity="center">
 
-    <TextView
+    <Button
+        android:id="@+id/button_overview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to the Dashboard"
-        android:textSize="24sp" />
+        android:text="Overview" />
 
-    <!-- Add more UI elements for your dashboard here -->
+    <Button
+        android:id="@+id/button_synthesis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Synthesis"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/button_announcements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Announcements"
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>
