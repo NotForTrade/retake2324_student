@@ -25,11 +25,6 @@
             android:name=".OverviewActivity"
             android:exported="false" />
         <activity
-            android:name=".ReceivedAnnouncementsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_received_announcements"
-            android:theme="@style/Theme.Retake2324_student.NoActionBar" />
-        <activity
             android:name=".RequestReassessmentActivity"
             android:exported="false" />
         <activity
