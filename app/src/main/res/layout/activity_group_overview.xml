@@ -30,14 +30,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/component_list"
+            android:text="@array/component_list"
             android:gravity="center"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tutor_list"
+            android:text="@array/tutor_list"
             android:gravity="center"
             />
 

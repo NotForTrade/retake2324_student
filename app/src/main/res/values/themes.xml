@@ -6,4 +6,21 @@
     </style>
 
     <style name="Theme.Retake2324_student" parent="Base.Theme.Retake2324_student" />
+
+    <style name="Theme.Retake2324_student.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Retake2324_student.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Retake2324_student.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- NavigationView item style -->
+    <style name="NavDrawerItemStyle" parent="Widget.Design.NavigationView">
+        <item name="itemIconTint">@color/nav_item_icon_color</item>
+        <item name="itemTextColor">@color/nav_item_text_color</item>
+    </style>
+
+
 </resources>

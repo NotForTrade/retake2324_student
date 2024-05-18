@@ -13,13 +13,21 @@
         android:theme="@style/Theme.Retake2324_student"
         tools:targetApi="31">
         <activity
+            android:name=".DashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OverviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReceivedAnnouncementsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_received_announcements"
+            android:theme="@style/Theme.Retake2324_student.NoActionBar" />
+        <activity
             android:name=".RequestReassessmentActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileViewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MenuActivity"
             android:exported="false" />
         <activity
             android:name=".GroupOverviewActivity"
