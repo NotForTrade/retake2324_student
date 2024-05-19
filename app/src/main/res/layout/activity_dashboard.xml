@@ -22,24 +22,43 @@
             android:layout_marginBottom="16dp" />
 
         <Button
-            android:id="@+id/button_overview"
+            android:id="@+id/button_personal_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Overview" />
+            android:layout_gravity="center_horizontal"
+            android:text="Personal Overview" />
 
         <Button
-            android:id="@+id/button_synthesis"
+            android:id="@+id/button_personal_synthesis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Synthesis"
+            android:layout_gravity="center_horizontal"
+            android:text="Personal Synthesis"
             android:layout_marginTop="16dp" />
 
         <Button
             android:id="@+id/button_announcements"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="Announcements"
             android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/button_group_overview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Group Overview" />
+
+        <Button
+            android:id="@+id/button_group_synthesis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Group Synthesis"
+            android:layout_marginTop="16dp" />
+
 
     </LinearLayout>
 

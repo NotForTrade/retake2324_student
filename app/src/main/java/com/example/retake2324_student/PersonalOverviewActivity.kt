@@ -10,11 +10,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class GroupOverviewActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class PersonalOverviewActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_group_overview)
+        setContentView(R.layout.activity_personal_overview)
 
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)

@@ -13,17 +13,20 @@ class DashboardActivity : AppCompatActivity(), BottomNavigationView.OnNavigation
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        val buttonOverview: Button = findViewById(R.id.button_overview)
-        val buttonSynthesis: Button = findViewById(R.id.button_synthesis)
+        val buttonPersonalOverview: Button = findViewById(R.id.button_personal_overview)
+        val buttonPersonalSynthesis: Button = findViewById(R.id.button_personal_synthesis)
         val buttonAnnouncements: Button = findViewById(R.id.button_announcements)
+        val buttonGroupOverview: Button = findViewById(R.id.button_group_overview)
+        val buttonGroupSynthesis: Button = findViewById(R.id.button_group_synthesis)
 
-        buttonOverview.setOnClickListener {
-            val intent = Intent(this, OverviewActivity::class.java)
+
+        buttonPersonalOverview.setOnClickListener {
+            val intent = Intent(this, PersonalOverviewActivity::class.java)
             startActivity(intent)
         }
 
-        buttonSynthesis.setOnClickListener {
-            val intent = Intent(this, SynthesisActivity::class.java)
+        buttonPersonalSynthesis.setOnClickListener {
+            val intent = Intent(this, PersonalSynthesisActivity::class.java)
             startActivity(intent)
         }
 
@@ -31,6 +34,17 @@ class DashboardActivity : AppCompatActivity(), BottomNavigationView.OnNavigation
             val intent = Intent(this, AnnouncementsActivity::class.java)
             startActivity(intent)
         }
+
+        buttonGroupOverview.setOnClickListener {
+            val intent = Intent(this, GroupOverviewActivity::class.java)
+            startActivity(intent)
+        }
+
+        buttonGroupSynthesis.setOnClickListener {
+            val intent = Intent(this, GroupSynthesisActivity::class.java)
+            startActivity(intent)
+        }
+
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(this)

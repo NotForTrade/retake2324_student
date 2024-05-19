@@ -13,25 +13,31 @@
         android:theme="@style/Theme.Retake2324_student"
         tools:targetApi="31">
         <activity
+            android:name=".PersonalSynthesisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PersonalOverviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
+        <activity
             android:name=".AnnouncementsActivity"
             android:exported="false" />
         <activity
-            android:name=".SynthesisActivity"
+            android:name=".GroupSynthesisActivity"
             android:exported="false" />
         <activity
             android:name=".DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".OverviewActivity"
+            android:name=".GroupOverviewActivity"
             android:exported="false" />
         <activity
             android:name=".RequestReassessmentActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GroupOverviewActivity"
             android:exported="false" />
         <activity
             android:name=".SkillActivity"

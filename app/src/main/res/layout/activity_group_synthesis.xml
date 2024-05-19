@@ -14,7 +14,7 @@
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Synthesis"
+            android:text="Group Synthesis"
             android:textStyle="bold"
             android:textSize="24sp"
             android:layout_gravity="center_horizontal"

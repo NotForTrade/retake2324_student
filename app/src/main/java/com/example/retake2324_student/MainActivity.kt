@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             finish() // Close MainActivity
         }
 */
-        val intent = Intent(this, OverviewActivity::class.java)
+        val intent = Intent(this, DashboardActivity::class.java)
         startActivity(intent)
         finish() // Close MainActivity
 
