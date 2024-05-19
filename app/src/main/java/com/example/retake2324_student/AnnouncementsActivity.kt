@@ -17,9 +17,6 @@ class AnnouncementsActivity : AppCompatActivity(), BottomNavigationView.OnNaviga
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_announcements)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
 

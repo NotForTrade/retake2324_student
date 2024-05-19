@@ -2,10 +2,12 @@ package com.example.retake2324_student
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class DashboardActivity : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,5 +31,28 @@ class DashboardActivity : AppCompatActivity() {
             val intent = Intent(this, AnnouncementsActivity::class.java)
             startActivity(intent)
         }
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.DashboardFragment -> {
+                val intent = Intent(this, DashboardActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.ProfileFragment -> {
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.LogoutFragment -> {
+                // Handle Logout navigation
+                return true
+            }
+        }
+        return false
     }
 }
