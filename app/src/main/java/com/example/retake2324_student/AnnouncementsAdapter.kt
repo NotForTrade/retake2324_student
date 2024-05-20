@@ -30,8 +30,8 @@ class AnnouncementsAdapter(private val announcements: List<Announcement>) :
         private val textContent: TextView = itemView.findViewById(R.id.textContent)
 
         fun bind(announcement: Announcement) {
-            textAuthor.text = announcement.author
-            textDate.text = announcement.date
+            textAuthor.text = announcement.tutor.firstName + " " + announcement.tutor.lastName
+            textDate.text = announcement.datetime
             textTitle.text = announcement.title
             textContent.text = announcement.content
 

@@ -1,49 +1,40 @@
 package com.example.retake2324_student
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-abstract class BaseActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
-
-    protected lateinit var bottomNavigationView: BottomNavigationView
+open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        // Clear default selection with a delay
-        Handler(Looper.getMainLooper()).post {
-            val menu = bottomNavigationView.menu
-            for (i in 0 until menu.size()) {
-                menu.getItem(i).isChecked = false
+        // Centralized exception handling
+        val app = application as App
+        lifecycleScope.launch {
+            app.exceptionFlow.collect { exception ->
+                exception?.let {
+                    handleException(it)
+                }
             }
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.ProfileFragment -> {
-                // Handle Profile navigation
-                return true
-            }
-            R.id.LogoutFragment -> {
-                // Handle Logout navigation
-                return true
-            }
+    // Code to control how exceptions are shown to the app user
+    // We can filter out some exceptions and rename their messages if we want
+    // Each activity can override this function to to custom routing (though it's better to have everything here)
+    private fun handleException(exception: Exception) {
+        when (exception) {
+            is java.sql.SQLException -> displayException(DbAccessException("Couldn't connect to DB"))
+            else -> displayException(exception)
         }
-        return false
+    }
+
+    // Each activity can override how an exception gets displayed
+    private fun displayException(exception: Exception) {
+        Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_LONG).show()
     }
 }

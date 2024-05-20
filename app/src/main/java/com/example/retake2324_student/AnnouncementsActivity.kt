@@ -5,20 +5,38 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.ktorm.database.Database
+import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.toList
 
-class AnnouncementsActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class AnnouncementsActivity : BaseActivity() {
+
+
+    private lateinit var errorTextView: TextView
+    private lateinit var recyclerView: RecyclerView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_announcements)
 
+        val app = application as App
+
+        /*
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
+
 
         // Clear default selection with a delay
         Handler(Looper.getMainLooper()).post {
@@ -27,9 +45,21 @@ class AnnouncementsActivity : AppCompatActivity(), BottomNavigationView.OnNaviga
                 menu.getItem(i).isChecked = false
             }
         }
+*/
 
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val database = app.getDatabase() // Reuse the existing database connection
+            loadAndDisplayComponents(database)
+        }
+
+        /*
+
+
+
 
         val announcements = listOf(
             Announcement("Author 1", "2023-05-01", "Title 1", "Content 1"),
@@ -40,8 +70,36 @@ class AnnouncementsActivity : AppCompatActivity(), BottomNavigationView.OnNaviga
 
         val adapter = AnnouncementsAdapter(announcements)
         recyclerView.adapter = adapter
+         */
+
     }
 
+
+    private suspend fun loadAndDisplayComponents(database: Database) {
+        val app = application as App
+
+        try {
+            val announcements = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Announcements)
+                    .toList()
+            }
+            if (announcements.isEmpty()) {
+                app.displayException(EmptyDbListResultException("No components found"))
+            }
+            val adapter = AnnouncementsAdapter(announcements)
+            recyclerView.adapter = adapter
+        } catch (e: Exception) {
+            app.displayException(e)
+        }
+    }
+
+    private fun displayError(message: String) {
+        errorTextView.text = message
+        errorTextView.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+    }
+
+/*
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.DashboardFragment -> {
@@ -61,4 +119,7 @@ class AnnouncementsActivity : AppCompatActivity(), BottomNavigationView.OnNaviga
         }
         return false
     }
+*/
 }
+
+

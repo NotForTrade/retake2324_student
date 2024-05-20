@@ -39,17 +39,25 @@ android {
 }
 
 dependencies {
-
-
-
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    implementation("org.ktorm:ktorm-core:4.0.0")
+    implementation("mysql:mysql-connector-java:5.1.49")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+
+
+
+
+
 }
