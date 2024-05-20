@@ -22,10 +22,8 @@ import org.ktorm.entity.toList
 
 class AnnouncementsActivity : BaseActivity() {
 
-
     private lateinit var errorTextView: TextView
     private lateinit var recyclerView: RecyclerView
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,44 +31,27 @@ class AnnouncementsActivity : BaseActivity() {
 
         val app = application as App
 
-        /*
+        /* bottomNavigationView related instructions commented for now
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
 
-
-        // Clear default selection with a delay
+        // Clear default selection with a delay -- idk if this actually does anything
         Handler(Looper.getMainLooper()).post {
             val menu = bottomNavigationView.menu
             for (i in 0 until menu.size()) {
                 menu.getItem(i).isChecked = false
             }
         }
-*/
+        */
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-
+        // Start the coroutine to call the database related instructions
         CoroutineScope(Dispatchers.Main).launch {
             val database = app.getDatabase() // Reuse the existing database connection
             loadAndDisplayComponents(database)
         }
-
-        /*
-
-
-
-
-        val announcements = listOf(
-            Announcement("Author 1", "2023-05-01", "Title 1", "Content 1"),
-            Announcement("Author 2", "2023-05-02", "Title 2", "Content 2"),
-            Announcement("Author 3", "2023-05-03", "Title 3", "Content 3")
-            // Add more announcements as needed
-        )
-
-        val adapter = AnnouncementsAdapter(announcements)
-        recyclerView.adapter = adapter
-         */
 
     }
 

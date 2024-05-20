@@ -1,5 +1,9 @@
 package com.example.retake2324_student
 
+import android.graphics.Bitmap
+import com.example.retake2324_student.Schemas.Users.bindTo
+import com.example.retake2324_student.Schemas.Users.primaryKey
+import com.example.retake2324_student.Schemas.Users.references
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 
@@ -11,9 +15,7 @@ interface Announcement : Entity<Announcement> {
     var title: String
     var content: String
     var datetime: String
-
 }
-
 
 interface AttendanceState : Entity<AttendanceState> {
     companion object : Entity.Factory<AttendanceState>()
@@ -65,10 +67,10 @@ interface User : Entity<User> {
     var group: Group
     var module: Module
     var component: Component
+    var photo: String
     var firstName: String
     var lastName: String
     var email: String
-    //    var photo: ByteArray
     var password: String
 
 }
@@ -147,10 +149,10 @@ object Schemas {
         val GroupId = int("group_id").references(Groups) { it.group }
         val ModuleId = int("module_id").references(Modules) { it.module}
         val ComponentId = int("component_id").references(Components) { it.component }
+        val Photo = varchar("photo").bindTo {it.photo}
         val FirstName = varchar("first_name").bindTo { it.firstName }
         val LastName = varchar("last_name").bindTo { it.lastName }
         val Mail = varchar("email").bindTo { it.email }
-        //val Photo = blob ("photo").bindTo { it.photo }
         val Password = varchar("password").bindTo { it.password }
     }
 
