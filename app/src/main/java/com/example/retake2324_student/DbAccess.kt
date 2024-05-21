@@ -8,20 +8,12 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 
-//const val SQL_host = "10.1.1.105"
 const val SQL_host = "10.0.2.2" // NB: docker container, "magic" IP used for the emulator to access localhost
 const val SQL_port = 3306
 
 const val SQL_url = "jdbc:mysql://$SQL_host:$SQL_port/test"
-// NB: not compatible w/ android
-//const val SQL_driver = "com.mysql.cj.jdbc.Driver"
 const val SQL_driver = "com.mysql.jdbc.Driver"
 
-//const val SQL_url = "jdbc:mariadb://$SQL_host:$SQL_port/test?useSSL=false"
-//const val SQL_driver = "org.mariadb.jdbc.Driver"
-
-//const val SQL_user = "remote"
-//const val SQL_passwd = "MysqlRemote2024.:!"
 const val SQL_user = "root"
 const val SQL_passwd = "root"
 

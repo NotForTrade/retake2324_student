@@ -89,8 +89,7 @@ interface GroupSkillMapping : Entity<GroupSkillMapping> {
     var groupSkillMappingId:  Int
     var skill: Skill
     var group: Group
-    var coefficient: Int
-    var document: ByteArray
+    var observation: String
 }
 
 interface StudentSkillMapping : Entity<StudentSkillMapping> {
@@ -98,9 +97,9 @@ interface StudentSkillMapping : Entity<StudentSkillMapping> {
     var studentSkillMappingId:  Int
     var user: User
     var skill: Skill
-    var value: Int
+    var score: Int
     var observation: String
-    var document: ByteArray
+    var document: String
 }
 
 object Schemas {
@@ -168,15 +167,15 @@ object Schemas {
         val GroupSkillMappingId = int("id").primaryKey().bindTo { it.groupSkillMappingId}
         val SkillId = int("skill_id").references(Skills) { it.skill }
         val GroupId = int("group_id").references(Groups) { it.group }
-        val Coefficient = int("coefficient").bindTo { it.coefficient }
-        val Document = blob("document").bindTo { it.document }
+        val Observation = varchar("observation").bindTo { it.observation }
     }
     object StudentSkillMappings : Table<StudentSkillMapping>("student_skill_mapping") {
         val StudentSkillMappingId = int("id").primaryKey().bindTo { it.studentSkillMappingId}
         val UserId = int("user_id").references(Users) { it.user }
         val Skill = int("skill_id").references(Skills) { it.skill }
+        val score = int("score").bindTo { it.score }
         val Observation = varchar("observation").bindTo { it.observation }
-        val Document = blob("document").bindTo { it.document }
+        val Document = varchar("document").bindTo { it.document }
     }
 
 }
