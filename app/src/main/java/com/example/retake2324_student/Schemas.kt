@@ -10,7 +10,7 @@ import org.ktorm.schema.*
 
 interface Announcement : Entity<Announcement> {
     companion object : Entity.Factory<Announcement>()
-    var announcementId: Int
+    var id: Int
     var tutor: User
     var title: String
     var content: String
@@ -19,13 +19,13 @@ interface Announcement : Entity<Announcement> {
 
 interface AttendanceState : Entity<AttendanceState> {
     companion object : Entity.Factory<AttendanceState>()
-    var attendanceStateId:  Int
-    var attendanceStateName: String
+    var id:  Int
+    var value: String
 }
 
 interface Attendance : Entity<Attendance> {
     companion object : Entity.Factory<Attendance>()
-    var attendanceId:  Int
+    var id:  Int
     var tutor: User
     var student: User
     var component: Component
@@ -35,34 +35,34 @@ interface Attendance : Entity<Attendance> {
 
 interface Component : Entity<Component> {
     companion object : Entity.Factory<Component>()
-    var componentId:  Int
+    var id:  Int
     var module: Module
     var tutor: User
-    var componentName: String
+    var name: String
 }
 
 interface Module : Entity<Module> {
     companion object : Entity.Factory<Module>()
-    var moduleId:  Int
-    var moduleName: String
+    var id:  Int
+    var name: String
 }
 
 interface Role : Entity<Role> {
     companion object : Entity.Factory<Role>()
-    var roleId:  Int
-    var roleName: String
+    var id:  Int
+    var name: String
 }
 
 
 interface Group : Entity<Group> {
     companion object : Entity.Factory<Group>()
-    var groupId:  Int
-    var groupName: String
+    var id:  Int
+    var name: String
 }
 
 interface User : Entity<User> {
     companion object : Entity.Factory<User>()
-    var userId: Int
+    var id: Int
     var role: Role
     var group: Group
     var module: Module
@@ -77,16 +77,16 @@ interface User : Entity<User> {
 
 interface Skill : Entity<Skill> {
     companion object : Entity.Factory<Skill>()
-    var skillId:  Int
+    var id:  Int
     var component: Component
-    var skillName: String
+    var name: String
     var description: String
     var coefficient: Int
 }
 
 interface GroupSkillMapping : Entity<GroupSkillMapping> {
     companion object : Entity.Factory<GroupSkillMapping>()
-    var groupSkillMappingId:  Int
+    var id:  Int
     var skill: Skill
     var group: Group
     var observation: String
@@ -94,7 +94,7 @@ interface GroupSkillMapping : Entity<GroupSkillMapping> {
 
 interface StudentSkillMapping : Entity<StudentSkillMapping> {
     companion object : Entity.Factory<StudentSkillMapping>()
-    var studentSkillMappingId:  Int
+    var id:  Int
     var user: User
     var skill: Skill
     var score: Int
@@ -105,7 +105,7 @@ interface StudentSkillMapping : Entity<StudentSkillMapping> {
 object Schemas {
 
     object Announcements : Table<Announcement>("announcement") {
-        val AnnouncementId = int("id").primaryKey().bindTo { it.announcementId }
+        val Id = int("id").primaryKey().bindTo { it.id }
         val TutorId = int("tutor_id").references(Users) { it.tutor }
         val Title = varchar("title").bindTo { it.title }
         val Content = varchar("content").bindTo { it.content }
@@ -113,37 +113,37 @@ object Schemas {
     }
 
     object AttendanceStates : Table<AttendanceState>("attendance_status") {
-        val AttendanceStateId = int("id").primaryKey().bindTo { it.attendanceStateId}
-        val AttendanceStateName = varchar("value").bindTo { it.attendanceStateName }
+        val Id = int("id").primaryKey().bindTo { it.id}
+        val Value = varchar("value").bindTo { it.value }
     }
 
     object Attendances : Table<Attendance>("attendance") {
-        val AttendanceId = int("id").primaryKey().bindTo { it.attendanceId}
+        val Id = int("id").primaryKey().bindTo { it.id}
         val ComponentId = int("component_id").references(Components) { it.component }
     }
 
     object Roles : Table<Role>("role") {
-        val RoleId = int("id").primaryKey().bindTo { it.roleId}
-        val RoleName = varchar("role_name").bindTo { it.roleName }
+        val Id = int("id").primaryKey().bindTo { it.id}
+        val Name = varchar("name").bindTo { it.name }
     }
 
     object Components : Table<Component>("component") {
-        val ComponentId = int("id").primaryKey().bindTo { it.componentId}
-        val ComponentName = varchar("component_name").bindTo { it.componentName }
+        val Id = int("id").primaryKey().bindTo { it.id}
+        val Name = varchar("name").bindTo { it.name }
     }
 
     object Groups : Table<Group>("group") {
-        val GroupId = int("id").primaryKey().bindTo { it.groupId}
-        val GroupName = varchar("group_name").bindTo { it.groupName }
+        val Id = int("id").primaryKey().bindTo { it.id}
+        val Name = varchar("name").bindTo { it.name }
     }
 
     object Modules : Table<Module>("module") {
-        val ModuleId = int("id").primaryKey().bindTo { it.moduleId}
-        val ModuleName = varchar("module_name").bindTo { it.moduleName }
+        val Id = int("id").primaryKey().bindTo { it.id}
+        val Name = varchar("name").bindTo { it.name }
     }
 
     object Users : Table<User>("user") {
-        val UserId = int("id").primaryKey().bindTo { it.userId }
+        val Id = int("id").primaryKey().bindTo { it.id }
         val RoleId = int("role_id").references(Roles) { it.role }
         val GroupId = int("group_id").references(Groups) { it.group }
         val ModuleId = int("module_id").references(Modules) { it.module}
@@ -156,23 +156,23 @@ object Schemas {
     }
 
     object Skills : Table<Skill>("skill") {
-        val SkillId = int("id").primaryKey().bindTo { it.skillId }
+        val Id = int("id").primaryKey().bindTo { it.id }
         val ComponentId = int("component_id").references(Components) { it.component }
-        val SkillName = varchar("name").bindTo { it.skillName }
+        val Name = varchar("name").bindTo { it.name }
         val Description = varchar("description").bindTo { it.description }
         val Coefficient = int("coefficient").bindTo { it.coefficient }
     }
 
     object GroupSkillMappings : Table<GroupSkillMapping>("group_skill_mapping") {
-        val GroupSkillMappingId = int("id").primaryKey().bindTo { it.groupSkillMappingId}
+        val Id = int("id").primaryKey().bindTo { it.id}
         val SkillId = int("skill_id").references(Skills) { it.skill }
         val GroupId = int("group_id").references(Groups) { it.group }
         val Observation = varchar("observation").bindTo { it.observation }
     }
     object StudentSkillMappings : Table<StudentSkillMapping>("student_skill_mapping") {
-        val StudentSkillMappingId = int("id").primaryKey().bindTo { it.studentSkillMappingId}
+        val Id = int("id").primaryKey().bindTo { it.id}
         val UserId = int("user_id").references(Users) { it.user }
-        val Skill = int("skill_id").references(Skills) { it.skill }
+        val SkillId = int("skill_id").references(Skills) { it.skill }
         val score = int("score").bindTo { it.score }
         val Observation = varchar("observation").bindTo { it.observation }
         val Document = varchar("document").bindTo { it.document }

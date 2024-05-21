@@ -59,16 +59,27 @@ open class BaseActivity : AppCompatActivity(), BottomNavigationView.OnNavigation
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
+
             R.id.ProfileFragment -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
+
+                // Avoid reloading the page if we currently are on it
+                if (getLayoutResourceId() != R.layout.activity_profile) {
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
+                }
                 return true
             }
+
+            R.id.DashboardFragment -> {
+
+                // Avoid reloading the page if we currently are on it
+                if (getLayoutResourceId() != R.layout.activity_dashboard){
+                    val intent = Intent(this, DashboardActivity::class.java)
+                    startActivity(intent)
+                }
+                return true
+            }
+
             R.id.LogoutFragment -> {
                 // Handle Logout navigation
                 return true

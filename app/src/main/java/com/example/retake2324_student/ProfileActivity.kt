@@ -27,7 +27,7 @@ import android.util.Base64
 class ProfileActivity : BaseActivity() {
 
     private lateinit var errorTextView: TextView
-    private var userID = 13
+    private var userID = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +48,7 @@ class ProfileActivity : BaseActivity() {
 
             // Fetch user data
             val user = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).find { it.UserId eq userID }
+                database.sequenceOf(Schemas.Users).find { it.Id eq userID }
             }
 
             if (user != null) {
@@ -60,7 +60,7 @@ class ProfileActivity : BaseActivity() {
                 val imagePhoto: ImageView = findViewById(R.id.imagePhoto)
 
                 // Set the values from the fetched object to the
-                textRole.text = user!!.role.roleName
+                textRole.text = user!!.role.name
                 textName.text = user!!.firstName + " " + user!!.lastName
                 textEmail.text = user!!.email.toString()
 
