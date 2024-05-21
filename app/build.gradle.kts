@@ -48,6 +48,7 @@ dependencies {
     implementation("org.ktorm:ktorm-core:4.0.0")
     implementation("mysql:mysql-connector-java:5.1.49")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
+    implementation(libs.androidx.recyclerview)
 
     testImplementation(libs.junit)
 
