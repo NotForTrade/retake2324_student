@@ -10,20 +10,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class PersonalOverviewActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class PersonalOverviewActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_personal_overview)
-
-
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        // Clear default selection
-//        bottomNavigationView.itemIconTintList = null
-
-
 
         val tableLayout: TableLayout = findViewById(R.id.tableLayout)
 
@@ -84,23 +74,8 @@ class PersonalOverviewActivity : AppCompatActivity(), BottomNavigationView.OnNav
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.ProfileFragment -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.LogoutFragment -> {
-                // Handle Logout navigation
-                return true
-            }
-        }
-        return false
+    override fun getLayoutResourceId(): Int {
+        return R.layout.activity_personal_overview
     }
+
 }

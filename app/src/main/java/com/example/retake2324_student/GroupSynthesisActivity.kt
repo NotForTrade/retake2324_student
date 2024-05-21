@@ -12,22 +12,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class GroupSynthesisActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class GroupSynthesisActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_group_synthesis)
-
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        // Clear default selection with a delay
-        Handler(Looper.getMainLooper()).post {
-            val menu = bottomNavigationView.menu
-            for (i in 0 until menu.size()) {
-                menu.getItem(i).isChecked = false
-            }
-        }
 
         val tableLayout: TableLayout = findViewById(R.id.tableLayout)
 
@@ -78,23 +66,8 @@ class GroupSynthesisActivity : AppCompatActivity(), BottomNavigationView.OnNavig
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.ProfileFragment -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.LogoutFragment -> {
-                // Handle Logout navigation
-                return true
-            }
-        }
-        return false
+    override fun getLayoutResourceId(): Int {
+        return R.layout.activity_group_synthesis
     }
+
 }

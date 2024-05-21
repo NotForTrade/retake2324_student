@@ -8,22 +8,11 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class GroupOverviewActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class GroupOverviewActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_group_overview)
-
-
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        // Clear default selection
-//        bottomNavigationView.itemIconTintList = null
-
-
 
         val tableLayout: TableLayout = findViewById(R.id.tableLayout)
 
@@ -84,23 +73,8 @@ class GroupOverviewActivity : AppCompatActivity(), BottomNavigationView.OnNaviga
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.ProfileFragment -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.LogoutFragment -> {
-                // Handle Logout navigation
-                return true
-            }
-        }
-        return false
+    override fun getLayoutResourceId(): Int {
+        return R.layout.activity_group_overview
     }
+
 }

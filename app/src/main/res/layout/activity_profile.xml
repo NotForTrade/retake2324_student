@@ -14,7 +14,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />
 
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,7 +63,6 @@
                 app:layout_constraintEnd_toStartOf="@id/imagePhoto"
                 app:layout_constraintHorizontal_bias="0.0" />
 
-
         </LinearLayout>
 
         <ImageView
@@ -79,12 +77,4 @@
 
     </LinearLayout>
 
-
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:menu="@menu/navigation_menu" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

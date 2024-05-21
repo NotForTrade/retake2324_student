@@ -7,18 +7,16 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class DashboardActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class DashboardActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
 
         val buttonPersonalOverview: Button = findViewById(R.id.button_personal_overview)
         val buttonPersonalSynthesis: Button = findViewById(R.id.button_personal_synthesis)
         val buttonAnnouncements: Button = findViewById(R.id.button_announcements)
         val buttonGroupOverview: Button = findViewById(R.id.button_group_overview)
         val buttonGroupSynthesis: Button = findViewById(R.id.button_group_synthesis)
-
 
         buttonPersonalOverview.setOnClickListener {
             val intent = Intent(this, PersonalOverviewActivity::class.java)
@@ -46,27 +44,11 @@ class DashboardActivity : AppCompatActivity(), BottomNavigationView.OnNavigation
         }
 
 
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.ProfileFragment -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.LogoutFragment -> {
-                // Handle Logout navigation
-                return true
-            }
-        }
-        return false
+    override fun getLayoutResourceId(): Int {
+        return R.layout.activity_dashboard
     }
+
+
 }

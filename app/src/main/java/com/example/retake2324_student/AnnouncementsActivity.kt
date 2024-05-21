@@ -27,22 +27,7 @@ class AnnouncementsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_announcements)
-
         val app = application as App
-
-        /* bottomNavigationView related instructions commented for now
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        // Clear default selection with a delay -- idk if this actually does anything
-        Handler(Looper.getMainLooper()).post {
-            val menu = bottomNavigationView.menu
-            for (i in 0 until menu.size()) {
-                menu.getItem(i).isChecked = false
-            }
-        }
-        */
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -53,6 +38,10 @@ class AnnouncementsActivity : BaseActivity() {
             loadAndDisplayComponents(database)
         }
 
+    }
+
+    override fun getLayoutResourceId(): Int {
+        return R.layout.activity_announcements
     }
 
 
@@ -80,27 +69,6 @@ class AnnouncementsActivity : BaseActivity() {
         recyclerView.visibility = View.GONE
     }
 
-/*
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.DashboardFragment -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.ProfileFragment -> {
-                val intent = Intent(this, ProfileActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.LogoutFragment -> {
-                // Handle Logout navigation
-                return true
-            }
-        }
-        return false
-    }
-*/
 }
 
 
