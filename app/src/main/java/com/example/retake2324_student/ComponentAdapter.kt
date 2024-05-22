@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.ktorm.entity.Entity
+
 
 class ComponentAdapter(private val components: List<Component>, private val students: List<User>) : RecyclerView.Adapter<ComponentAdapter.ComponentViewHolder>() {
 
@@ -29,23 +31,25 @@ class ComponentAdapter(private val components: List<Component>, private val stud
 
 
         // Calculate the component score for each student
-        val studentsComponentScore = getStudentsComponentScore(component.skills, students)
+        setComponentScores(component, students)
 
 
         // Set up component's scores RecyclerView
         holder.scoresRecyclerView.layoutManager = LinearLayoutManager(holder.scoresRecyclerView.context)
-        holder.scoresRecyclerView.adapter = ScoreAdapter(studentsComponentScore)
+        holder.scoresRecyclerView.adapter = ScoreAdapter(component.scores)
 
         // Set up skills RecyclerView
-        // holder.skillsRecyclerView.layoutManager = LinearLayoutManager(holder.skillsRecyclerView.context)
-        // holder.skillsRecyclerView.adapter = SkillAdapter(component.skills)
+        holder.skillsRecyclerView.layoutManager = LinearLayoutManager(holder.skillsRecyclerView.context)
+        holder.skillsRecyclerView.adapter = SkillAdapter(component.skills)
     }
 
     override fun getItemCount() = components.size
 
-    private fun getStudentsComponentScore(skills: List<Skill>, students: List<User>): MutableMap<Int, Double> {
+    private fun setComponentScores(component: Component, students: List<User>) {
 
-        val studentComponentScore = mutableMapOf<Int, Double>()
+        val skills = component.skills
+
+        val studentScores = mutableListOf<StudentSkillMapping>()
 
         for (student in students) {
 
@@ -62,16 +66,24 @@ class ComponentAdapter(private val components: List<Component>, private val stud
             // Concatenate all the scores, taking into account the coefficient
             val weightedSum: Double = scores.zip(coefficients).sumOf { it.first * it.second }.toDouble()
             // Calculate the sum of coefficients
-            val totalCoefficient = coefficients.sum()
+            val totalCoefficient: Double = coefficients.sum().toDouble()
             // Divide the weighted sum by the sum of coefficients to get the component score
-            val componentScore = weightedSum / totalCoefficient
-            // Attribute the component score to the studentId
-            studentComponentScore[student.id] = componentScore
+            val componentScore = if (totalCoefficient != 0.0) weightedSum / totalCoefficient else 0.0
+
+            val studentScore: StudentSkillMapping = StudentSkillMapping {
+                id
+                var student = student
+                skill
+                score = componentScore
+                observation
+                document
+            }
+
+            studentScores.add(studentScore)
+
         }
 
-        // Sort the map to ensure the order is kept
-        return studentComponentScore.toSortedMap()
-
+        component.scores = studentScores
     }
 
 }

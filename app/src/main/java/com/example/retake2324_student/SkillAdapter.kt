@@ -25,7 +25,7 @@ class SkillAdapter(private val skills: List<Skill>) : RecyclerView.Adapter<Skill
 
         // Set up scores RecyclerView
         holder.scoresRecyclerView.layoutManager = LinearLayoutManager(holder.scoresRecyclerView.context, LinearLayoutManager.HORIZONTAL, false)
-        // holder.scoresRecyclerView.adapter = ScoreAdapter(skill.scores)
+        holder.scoresRecyclerView.adapter = ScoreAdapter(skill.scores)
     }
 
     override fun getItemCount() = skills.size

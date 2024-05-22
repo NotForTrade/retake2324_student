@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.example.retake2324_student.Schemas.Users.bindTo
 import com.example.retake2324_student.Schemas.Users.primaryKey
 import com.example.retake2324_student.Schemas.Users.references
+import org.ktorm.dsl.toDouble
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 
@@ -40,6 +41,7 @@ interface Component : Entity<Component> {
     var tutor: User
     var name: String
     var skills: List<Skill>
+    var scores: List<StudentSkillMapping>
 }
 
 interface Module : Entity<Module> {
@@ -99,7 +101,7 @@ interface StudentSkillMapping : Entity<StudentSkillMapping> {
     var id:  Int
     var student: User
     var skill: Skill
-    var score: Int
+    var score: Double
     var observation: String
     var document: String
 }
@@ -175,7 +177,7 @@ object Schemas {
         val Id = int("id").primaryKey().bindTo { it.id}
         val StudentId = int("student_id").references(Users) { it.student }
         val SkillId = int("skill_id").references(Skills) { it.skill }
-        val score = int("score").bindTo { it.score }
+        val score = double("score").bindTo { it.score }
         val Observation = varchar("observation").bindTo { it.observation }
         val Document = varchar("document").bindTo { it.document }
     }
