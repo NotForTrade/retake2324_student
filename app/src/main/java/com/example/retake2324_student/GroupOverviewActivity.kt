@@ -62,41 +62,31 @@ class GroupOverviewActivity : BaseActivity() {
                     .toList()
             }
 
-            Log.i("S", "#################### STUDENTS FOUND ######################")
-            for (student in students) {
-                Log.i(student.firstName + " " + student.lastName, student.firstName + " " + student.lastName)
-            }
-
-
             // Fetch components data
             val components = withContext(Dispatchers.IO) {
                 database.sequenceOf(Schemas.Components)
                     .toList()
             }
+
             // Fetch all skills for each components
             for (component: Component in components) {
-
-                Log.i("S", "#################### " + component.name + " ######################")
                 component.skills = withContext(Dispatchers.IO) {
                     database.sequenceOf(Schemas.Skills)
                         .filter { it.ComponentId eq component.id }.toList()
                 }
 
-
                 // Fetch all scores for each skills and for each student
                 for (skill: Skill in component.skills) {
-                    Log.i("S", "#################### " + skill.name + " ######################")
                     for (student: User in students) {
                         skill.scores = withContext(Dispatchers.IO) {
                             database.sequenceOf(Schemas.StudentSkillMappings)
-                                .filter {it.SkillId eq skill.id}
-                                .filter{it.StudentId eq student.id}
+                                .filter { it.SkillId eq skill.id }
+                                .filter { it.StudentId eq student.id }
                                 .toList()
                         }
                     }
                 }
             }
-
 
             if (components.isEmpty()) {
                 app.displayException(EmptyDbListResultException("No components found"))
@@ -119,12 +109,6 @@ class GroupOverviewActivity : BaseActivity() {
             app.displayException(e)
         }
     }
-
-    private fun buildTable() {
-
-
-    }
-
 
     override fun getLayoutResourceId(): Int {
         return R.layout.activity_group_overview
