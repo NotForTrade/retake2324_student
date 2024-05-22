@@ -79,7 +79,7 @@ class GroupOverviewActivity : BaseActivity() {
                 for (skill: Skill in component.skills) {
                     for (student: User in students) {
                         skill.scores = withContext(Dispatchers.IO) {
-                            database.sequenceOf(Schemas.StudentSkillMappings)
+                            database.sequenceOf(Schemas.Scores)
                                 .filter { it.SkillId eq skill.id }
                                 .filter { it.StudentId eq student.id }
                                 .toList()

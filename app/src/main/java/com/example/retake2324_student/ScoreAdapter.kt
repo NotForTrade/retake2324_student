@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ScoreAdapter(private val scores: List<StudentSkillMapping>) : RecyclerView.Adapter<ScoreAdapter.ScoreViewHolder>() {
+class ScoreAdapter(private val scores: List<Score>) : RecyclerView.Adapter<ScoreAdapter.ScoreViewHolder>() {
 
     class ScoreViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val score: TextView = view.findViewById(R.id.tv_score)
@@ -19,7 +19,7 @@ class ScoreAdapter(private val scores: List<StudentSkillMapping>) : RecyclerView
 
     override fun onBindViewHolder(holder: ScoreViewHolder, position: Int) {
         val studentScore = scores[position]
-        holder.score.text = studentScore.score.toString()
+        holder.score.text = studentScore.value.toString()
     }
 
     override fun getItemCount() = scores.size

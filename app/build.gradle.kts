@@ -48,6 +48,14 @@ dependencies {
     implementation("org.ktorm:ktorm-core:4.0.0")
     implementation("mysql:mysql-connector-java:5.1.49")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
+
+    implementation("androidx.compose.ui:ui:1.1.0")
+    implementation("androidx.compose.material:material:1.1.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
+    implementation("androidx.activity:activity-compose:1.4.0")
+
+
     implementation(libs.androidx.recyclerview)
 
     testImplementation(libs.junit)

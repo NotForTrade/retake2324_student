@@ -41,7 +41,7 @@ interface Component : Entity<Component> {
     var tutor: User
     var name: String
     var skills: List<Skill>
-    var scores: List<StudentSkillMapping>
+    var scores: List<Score>
 }
 
 interface Module : Entity<Module> {
@@ -85,7 +85,7 @@ interface Skill : Entity<Skill> {
     var name: String
     var description: String
     var coefficient: Int
-    var scores: List<StudentSkillMapping>
+    var scores: List<Score>
 }
 
 interface GroupSkillMapping : Entity<GroupSkillMapping> {
@@ -96,12 +96,12 @@ interface GroupSkillMapping : Entity<GroupSkillMapping> {
     var observation: String
 }
 
-interface StudentSkillMapping : Entity<StudentSkillMapping> {
-    companion object : Entity.Factory<StudentSkillMapping>()
+interface Score : Entity<Score> {
+    companion object : Entity.Factory<Score>()
     var id:  Int
     var student: User
     var skill: Skill
-    var score: Double
+    var value: Double
     var observation: String
     var document: String
 }
@@ -173,11 +173,11 @@ object Schemas {
         val GroupId = int("group_id").references(Groups) { it.group }
         val Observation = varchar("observation").bindTo { it.observation }
     }
-    object StudentSkillMappings : Table<StudentSkillMapping>("student_skill_mapping") {
+    object Scores : Table<Score>("student_skill_mapping") {
         val Id = int("id").primaryKey().bindTo { it.id}
         val StudentId = int("student_id").references(Users) { it.student }
         val SkillId = int("skill_id").references(Skills) { it.skill }
-        val score = double("score").bindTo { it.score }
+        val score = double("score").bindTo { it.value }
         val Observation = varchar("observation").bindTo { it.observation }
         val Document = varchar("document").bindTo { it.document }
     }

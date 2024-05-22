@@ -49,13 +49,13 @@ class ComponentAdapter(private val components: List<Component>, private val stud
 
         val skills = component.skills
 
-        val studentScores = mutableListOf<StudentSkillMapping>()
+        val studentScores = mutableListOf<Score>()
 
         for (student in students) {
 
             // Collect all coefficients for skills that have scores for the given student
             val scores = skills.flatMap { skill ->
-                skill.scores.filter { it.student.id == student.id }.map { it.score }
+                skill.scores.filter { it.student.id == student.id }.map { it.value }
             }
 
             // Collect all coefficients for skills that have scores for the given student
@@ -70,11 +70,11 @@ class ComponentAdapter(private val components: List<Component>, private val stud
             // Divide the weighted sum by the sum of coefficients to get the component score
             val componentScore = if (totalCoefficient != 0.0) weightedSum / totalCoefficient else 0.0
 
-            val studentScore: StudentSkillMapping = StudentSkillMapping {
+            val studentScore: Score = Score {
                 id
                 var student = student
                 skill
-                score = componentScore
+                value = componentScore
                 observation
                 document
             }
