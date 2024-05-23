@@ -2,68 +2,181 @@ package com.example.retake2324_student.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.TableLayout
-import android.widget.TableRow
-import android.widget.TextView
-import com.example.retake2324_student.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.retake2324_student.core.App
+import com.example.retake2324_student.data.Component
+import com.example.retake2324_student.data.Schemas
+import com.example.retake2324_student.data.Score
+import com.example.retake2324_student.data.Skill
+import com.example.retake2324_student.data.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.ktorm.database.Database
+import org.ktorm.dsl.eq
+import org.ktorm.entity.filter
+import org.ktorm.entity.find
+import org.ktorm.entity.toList
+import org.ktorm.entity.sequenceOf
 
-class PersonalSynthesisActivity : BaseActivity() {
+
+class PersonalSynthesisActivity : ComponentActivity() {
+
+    private val studentId = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val app = application as App
 
-        val tableLayout: TableLayout = findViewById(R.id.tableLayout)
-
-        val students = listOf("Student 1", "Student 2", "Student 3", "Student 4") // This can vary
-        val components = listOf("Component 1") // Only show component scores
-        val scores = listOf(
-            listOf("85", "88", "84", "81") // Scores for Component 1
-        )
-
-        // Create header row
-        val headerRow = TableRow(this)
-        val headerComponentTextView = TextView(this)
-        headerComponentTextView.text = "Components"
-        headerComponentTextView.setPadding(8, 8, 8, 8)
-        headerComponentTextView.setTypeface(null, android.graphics.Typeface.BOLD)
-        headerRow.addView(headerComponentTextView)
-
-        for (student in students) {
-            val studentTextView = TextView(this)
-            studentTextView.text = student
-            studentTextView.setPadding(8, 8, 8, 8)
-            studentTextView.setTypeface(null, android.graphics.Typeface.BOLD)
-            headerRow.addView(studentTextView)
+        setContent {
+            MaterialTheme {
+                PersonalSynthesisScreen(app, studentId)
+            }
         }
-        tableLayout.addView(headerRow)
+    }
+}
 
-        // Create data rows
-        for (i in components.indices) {
-            val tableRow = TableRow(this)
 
-            val componentTextView = TextView(this)
-            componentTextView.text = components[i]
-            componentTextView.setPadding(8, 8, 8, 8)
-            tableRow.addView(componentTextView)
 
-            for (j in students.indices) {
-                if (j < scores[i].size) {
-                    val scoreTextView = TextView(this)
-                    scoreTextView.text = scores[i][j]
-                    scoreTextView.setPadding(8, 8, 8, 8)
-                    tableRow.addView(scoreTextView)
-                } else {
-                    Log.e("SynthesisActivity", "Mismatch between students and scores for component $i")
-                }
+private suspend fun fetchObjects(database: Database, studentId: Int): Pair<User, List<Component>> {
+
+    try {
+
+        // Fetch all the students from the user's group
+        val student = withContext(Dispatchers.IO) {
+            database.sequenceOf(Schemas.Users).find { it.Id eq studentId }
+        }
+
+        if (student != null) {
+
+            // Fetch components data
+            val components = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Components)
+                    .toList()
             }
 
-            tableLayout.addView(tableRow)
+            // Fetch skills data
+            val skills = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Skills)
+                    .toList()
+            }
+
+            // Fetch scores data
+            val scores = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Scores)
+                    .toList()
+            }
+
+            // Set-up the studentComponentScore mutable list to build the list of students' score per component
+            val studentComponentScore: MutableList<Score> = mutableListOf<Score>()
+
+            if (components.isNotEmpty()) {
+                // attribute skills to their corresponding component
+                components.forEach {component ->
+                    component.skills = skills.filter{ it.component.id == component.id }.toList()
+                    if (component.skills.isNotEmpty()) {
+                        if (component.skills.isNotEmpty()) {
+                            // Calculate the student's weighted average score of the currently explored component
+                            val studentScores = scores.filter { (it.student.id == student.id) and (it.skill.component.id == component.id) }
+                            if (studentScores.isNotEmpty()){
+                                var weightedScoreSum: Double = 0.0
+                                var coefficientSum: Double = 0.0
+                                studentScores.forEach {studentScore ->
+                                    weightedScoreSum += studentScore.value * studentScore.skill.coefficient
+                                    coefficientSum += studentScore.skill.coefficient
+                                }
+                                // Create and add a new Score object with the weighted average score for the component
+                                studentComponentScore.add(Score{
+                                    id // not used
+                                    this.student = student
+                                    skill // not used
+                                    this.value = if (coefficientSum!=0.0) weightedScoreSum/coefficientSum else 0.0
+                                    observation // not used
+                                    document // not used
+                                })
+                            }
+                            // Assign the new built score list to the component
+                            component.scores = studentComponentScore.toList()
+                            // Clear studentComponentScore for future calculation
+                            studentComponentScore.clear()
+                            // Log.i("COMPONENT SCORE", component.scores.toString())
+                        }
+                    }
+                }
+            }
+            return Pair(student, components)
+        } else {
+            Log.e("SQL FETCHING ERROR", "User with $studentId not found on the database!")
+            return Pair(User(), listOf<Component>())
+        }
+    } catch (e: Exception) {
+        Log.e("SQL FETCHING ERROR", e.toString())
+        return Pair(User(), listOf<Component>())
+    }
+}
+
+
+@Composable
+fun PersonalSynthesisScreen(app: App, studentId: Int) {
+    // MutableState to hold the lists
+    var student by remember { mutableStateOf(User()) }
+    var components by remember { mutableStateOf<List<Component>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        val database = app.getDatabase() // Reuse the existing database connection
+        val (fetchedStudent, fetchedComponents) = fetchObjects(database, studentId)
+
+        // Update the states
+        student = fetchedStudent
+        components = fetchedComponents
+        isLoading = false
+    }
+
+    if (isLoading) {
+        Text(text = "Loading...", modifier = Modifier.padding(16.dp))
+    } else {
+        PersonalSynthesisTable(student, components)
+    }
+}
+
+@Composable
+fun PersonalSynthesisTable(student: User, components: List<Component>) {
+    Column(modifier = Modifier.padding(16.dp)) {
+
+        // Row for the group name and student name
+        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+            Text(text = "Group: ${student.group.name}", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(2f))
+            Text(text = student.firstName + " " + student.lastName, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        }
+
+        // LazyColumn for each component under group
+        if (components.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.padding(16.dp).fillMaxHeight()) {
+                items(components) { component ->
+                    // Component row
+                    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        Text(text = "Component: ${component.name}", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(2f))
+                        val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
+                        Text(text = "$score", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                    }
+                }
+            }
         }
     }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_personal_synthesis
-    }
-
 }
