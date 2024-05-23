@@ -151,15 +151,15 @@ fun GroupOverviewScreen(app: App, groupId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        GroupTable(students, components)
+        GroupOverviewTable(students, components)
     }
 }
 
 @Composable
-fun GroupTable(students: List<User>, components: List<Component>) {
+fun GroupOverviewTable(students: List<User>, components: List<Component>) {
     Column(modifier = Modifier.padding(16.dp)) {
+
         // Row for the group name and student names
-        Log.i("STUDENTS", students.toString())
         if (students.isNotEmpty()) {
             Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                 Text(text = "Group: ${students[0].group.name}", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(2f))
@@ -170,7 +170,6 @@ fun GroupTable(students: List<User>, components: List<Component>) {
         }
 
         // LazyColumn for each component under group
-        Log.i("COMPONENTS", components.toString())
         if (components.isNotEmpty()) {
             LazyColumn(modifier = Modifier.padding(16.dp).fillMaxHeight()) {
                 items(components) { component ->
@@ -184,7 +183,6 @@ fun GroupTable(students: List<User>, components: List<Component>) {
                             }
                         }
                     }
-                    Log.i("SKILLS", component.skills.toString())
                     if (component.skills.isNotEmpty()) {
                         // LazyColumn for each skill under the component
                         LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)) {
