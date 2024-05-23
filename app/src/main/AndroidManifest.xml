@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:name=".App"
+        android:name=".core.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,40 +15,40 @@
         android:theme="@style/Theme.Retake2324_student"
         tools:targetApi="31">
         <activity
-            android:name=".PersonalSynthesisActivity"
+            android:name=".ui.PersonalSynthesisActivity"
             android:exported="false" />
         <activity
-            android:name=".PersonalOverviewActivity"
+            android:name=".ui.PersonalOverviewActivity"
             android:exported="false" />
         <activity
-            android:name=".SignUpActivity"
+            android:name=".ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".AnnouncementsActivity"
+            android:name=".ui.AnnouncementsActivity"
             android:exported="false" />
         <activity
-            android:name=".GroupSynthesisActivity"
+            android:name=".ui.GroupSynthesisActivity"
             android:exported="false" />
         <activity
-            android:name=".DashboardActivity"
+            android:name=".ui.DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".GroupOverviewActivity"
+            android:name=".ui.GroupOverviewActivity"
             android:exported="false" />
         <activity
-            android:name=".RequestReassessmentActivity"
+            android:name=".ui.RequestReassessmentActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".ui.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".SkillActivity"
+            android:name=".ui.SkillActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

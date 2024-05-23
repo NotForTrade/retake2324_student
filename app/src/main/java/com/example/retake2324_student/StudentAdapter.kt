@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.retake2324_student.data.User
 
 class StudentAdapter(private val studentList: List<User>) :
     RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {

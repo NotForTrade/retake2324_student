@@ -1,11 +1,9 @@
-package com.example.retake2324_student
+package com.example.retake2324_student.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.retake2324_student.R
 
 class DashboardActivity : BaseActivity() {
 
@@ -32,6 +30,7 @@ class DashboardActivity : BaseActivity() {
             val intent = Intent(this, AnnouncementsActivity::class.java)
             startActivity(intent)
         }
+
 
         buttonGroupOverview.setOnClickListener {
             val intent = Intent(this, GroupOverviewActivity::class.java)

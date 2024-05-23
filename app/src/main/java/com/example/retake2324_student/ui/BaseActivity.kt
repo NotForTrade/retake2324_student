@@ -1,14 +1,16 @@
-package com.example.retake2324_student
+package com.example.retake2324_student.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import android.view.MenuItem
 import android.widget.FrameLayout
+import com.example.retake2324_student.DbAccessException
+import com.example.retake2324_student.R
+import com.example.retake2324_student.core.App
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 open class BaseActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {

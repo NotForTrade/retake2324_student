@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.ktorm.entity.Entity
+import com.example.retake2324_student.data.Component
+import com.example.retake2324_student.data.Score
+import com.example.retake2324_student.data.User
 
 
 class ComponentAdapter(private val components: List<Component>, private val students: List<User>) : RecyclerView.Adapter<ComponentAdapter.ComponentViewHolder>() {
@@ -72,7 +74,7 @@ class ComponentAdapter(private val components: List<Component>, private val stud
 
             val studentScore: Score = Score {
                 id
-                var student = student
+                student
                 skill
                 value = componentScore
                 observation

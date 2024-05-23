@@ -1,6 +1,11 @@
-package com.example.retake2324_student
+package com.example.retake2324_student.core
 
 import android.app.Application
+import com.example.retake2324_student.connectDatabase
+import com.example.retake2324_student.data.Component
+import com.example.retake2324_student.data.Module
+import com.example.retake2324_student.data.Skill
+import com.example.retake2324_student.data.User
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

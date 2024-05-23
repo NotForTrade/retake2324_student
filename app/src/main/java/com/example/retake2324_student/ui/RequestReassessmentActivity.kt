@@ -1,4 +1,4 @@
-package com.example.retake2324_student
+package com.example.retake2324_student.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -11,6 +11,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.retake2324_student.R
+
 class RequestReassessmentActivity : AppCompatActivity() {
 
     private lateinit var selectedFileUri: Uri

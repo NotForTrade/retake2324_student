@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.retake2324_student.data.Announcement
 
 class AnnouncementsAdapter(private val announcements: List<Announcement>) :
     RecyclerView.Adapter<AnnouncementsAdapter.AnnouncementViewHolder>() {

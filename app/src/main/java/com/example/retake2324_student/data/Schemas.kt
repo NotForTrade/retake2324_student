@@ -1,10 +1,5 @@
-package com.example.retake2324_student
+package com.example.retake2324_student.data
 
-import android.graphics.Bitmap
-import com.example.retake2324_student.Schemas.Users.bindTo
-import com.example.retake2324_student.Schemas.Users.primaryKey
-import com.example.retake2324_student.Schemas.Users.references
-import org.ktorm.dsl.toDouble
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 
@@ -173,11 +168,11 @@ object Schemas {
         val GroupId = int("group_id").references(Groups) { it.group }
         val Observation = varchar("observation").bindTo { it.observation }
     }
-    object Scores : Table<Score>("student_skill_mapping") {
+    object Scores : Table<Score>("score") {
         val Id = int("id").primaryKey().bindTo { it.id}
         val StudentId = int("student_id").references(Users) { it.student }
         val SkillId = int("skill_id").references(Skills) { it.skill }
-        val score = double("score").bindTo { it.value }
+        val value = double("value").bindTo { it.value }
         val Observation = varchar("observation").bindTo { it.observation }
         val Document = varchar("document").bindTo { it.document }
     }

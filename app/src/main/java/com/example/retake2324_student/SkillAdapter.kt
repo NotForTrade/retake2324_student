@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.retake2324_student.data.Skill
 
 class SkillAdapter(private val skills: List<Skill>) : RecyclerView.Adapter<SkillAdapter.SkillViewHolder>() {
 
