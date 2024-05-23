@@ -1,9 +1,11 @@
 package com.example.retake2324_student.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -161,6 +163,8 @@ fun PersonalOverviewScreen(app: App, studentId: Int) {
 
 @Composable
 fun PersonalOverviewTable(student: User, components: List<Component>) {
+    val context = LocalContext.current
+
     Column(modifier = Modifier.padding(16.dp)) {
 
         // Row for the group name and student names
@@ -185,7 +189,17 @@ fun PersonalOverviewTable(student: User, components: List<Component>) {
                         // LazyColumn for each skill under the component
                         LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)) {
                             items(component.skills) { skill ->
-                                Row(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 2.dp, bottom = 2.dp)) {
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, top = 2.dp, bottom = 2.dp)
+                                    .clickable{
+                                        val intent = Intent(context, SkillActivity::class.java).apply {
+                                            putExtra("studentId", student.id)
+                                            putExtra("skillId", skill.id)
+                                        }
+                                        context.startActivity(intent)
+                                    }
+                                ) {
                                     Text(text = "Skill: ${skill.name}", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(2f))
                                     val skillScore = skill.scores.find { it.student.id == student.id }?.value ?: 0.0
                                     Text(text = "$skillScore", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))

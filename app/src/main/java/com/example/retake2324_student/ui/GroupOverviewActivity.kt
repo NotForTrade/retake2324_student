@@ -1,9 +1,11 @@
 package com.example.retake2324_student.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,7 +38,7 @@ import org.ktorm.entity.sequenceOf
 
 class GroupOverviewActivity : ComponentActivity() {
 
-    private val groupId = 1
+    private val studentId = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +47,7 @@ class GroupOverviewActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                GroupOverviewScreen(app, groupId)
+                GroupOverviewScreen(app, studentId)
             }
         }
     }
@@ -53,77 +55,90 @@ class GroupOverviewActivity : ComponentActivity() {
 
 
 
-private suspend fun fetchObjects(database: Database, groupId: Int): Pair<List<User>, List<Component>> {
+private suspend fun fetchObjects(database: Database, studentId: Int): Pair<List<User>, List<Component>> {
 
     try {
 
         // Fetch all the students from the user's group
-        val students = withContext(Dispatchers.IO) {
-            database.sequenceOf(Schemas.Users).filter { it.GroupId eq groupId }.toList()
+        val student = withContext(Dispatchers.IO) {
+            database.sequenceOf(Schemas.Users).find { it.Id eq studentId }
         }
 
-        // Fetch components data
-        val components = withContext(Dispatchers.IO) {
-            database.sequenceOf(Schemas.Components)
-                .toList()
-        }
+        if (student != null) {
 
-        // Fetch skills data
-        val skills = withContext(Dispatchers.IO) {
-            database.sequenceOf(Schemas.Skills)
-                .toList()
-        }
+            // Fetch the students from the same group
+            val students = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Users).filter { it.GroupId eq student.group.id}
+                    .toList()
+            }
 
-        // Fetch scores data
-        val scores = withContext(Dispatchers.IO) {
-            database.sequenceOf(Schemas.Scores)
-                .toList()
-        }
+            // Fetch components data
+            val components = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Components)
+                    .toList()
+            }
 
-        // Set-up the studentComponentScore mutable list to build the list of students' score per component
-        val studentComponentScore: MutableList<Score> = mutableListOf<Score>()
+            // Fetch skills data
+            val skills = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Skills)
+                    .toList()
+            }
 
-        if (components.isNotEmpty()) {
-            // attribute skills to their corresponding component
-            components.forEach {component ->
-                component.skills = skills.filter{ it.component.id == component.id }.toList()
-                if (component.skills.isNotEmpty()) {
-                    // attribute scores to each skills
-                    component.skills.forEach { skill ->
-                        skill.scores = scores.filter { it.skill.id == skill.id }.toList()
-                    }
-                    if (students.isNotEmpty() and scores.isNotEmpty()) {
-                        // For each student, calculate their weighted average score of the currently explored component
-                        students.forEach {student ->
-                            val studentScores = scores.filter { (it.student.id == student.id) and (it.skill.component.id == component.id) }
-                            if (studentScores.isNotEmpty()){
-                                var weightedScoreSum: Double = 0.0
-                                var coefficientSum: Double = 0.0
-                                studentScores.forEach {studentScore ->
-                                    weightedScoreSum += studentScore.value * studentScore.skill.coefficient
-                                    coefficientSum += studentScore.skill.coefficient
-                                }
-                                // Create and add a new Score object with the weighted average score for the component
-                                studentComponentScore.add(Score{
-                                    id // not used
-                                    this.student = student
-                                    skill // not used
-                                    this.value = if (coefficientSum!=0.0) weightedScoreSum/coefficientSum else 0.0
-                                    observation // not used
-                                    document // not used
-                                })
-                            }
+            // Fetch scores data
+            val scores = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Scores)
+                    .toList()
+            }
+
+            // Set-up the studentComponentScore mutable list to build the list of students' score per component
+            val studentComponentScore: MutableList<Score> = mutableListOf<Score>()
+
+            if (components.isNotEmpty()) {
+                // attribute skills to their corresponding component
+                components.forEach {component ->
+                    component.skills = skills.filter{ it.component.id == component.id }.toList()
+                    if (component.skills.isNotEmpty()) {
+                        // attribute scores to each skills
+                        component.skills.forEach { skill ->
+                            skill.scores = scores.filter { it.skill.id == skill.id }.toList()
                         }
-                        // Assign the new built score list to the component
-                        component.scores = studentComponentScore.toList()
-                        // Clear studentComponentScore for future calculation
-                        studentComponentScore.clear()
-                        // Log.i("COMPONENT SCORE", component.scores.toString())
+                        if (students.isNotEmpty() and scores.isNotEmpty()) {
+                            // For each student, calculate their weighted average score of the currently explored component
+                            students.forEach {student ->
+                                val studentScores = scores.filter { (it.student.id == student.id) and (it.skill.component.id == component.id) }
+                                if (studentScores.isNotEmpty()){
+                                    var weightedScoreSum: Double = 0.0
+                                    var coefficientSum: Double = 0.0
+                                    studentScores.forEach {studentScore ->
+                                        weightedScoreSum += studentScore.value * studentScore.skill.coefficient
+                                        coefficientSum += studentScore.skill.coefficient
+                                    }
+                                    // Create and add a new Score object with the weighted average score for the component
+                                    studentComponentScore.add(Score{
+                                        id // not used
+                                        this.student = student
+                                        skill // not used
+                                        this.value = if (coefficientSum!=0.0) weightedScoreSum/coefficientSum else 0.0
+                                        observation // not used
+                                        document // not used
+                                    })
+                                }
+                            }
+                            // Assign the new built score list to the component
+                            component.scores = studentComponentScore.toList()
+                            // Clear studentComponentScore for future calculation
+                            studentComponentScore.clear()
+                            // Log.i("COMPONENT SCORE", component.scores.toString())
+                        }
                     }
                 }
             }
+
+            return Pair(students, components)
+
+        }else {
+            return Pair(listOf<User>(), listOf<Component>())
         }
-        return Pair(students, components)
     } catch (e: Exception) {
         Log.e("SQL FETCHING ERROR", e.toString())
         return Pair(listOf<User>(), listOf<Component>())
@@ -132,7 +147,7 @@ private suspend fun fetchObjects(database: Database, groupId: Int): Pair<List<Us
 
 
 @Composable
-fun GroupOverviewScreen(app: App, groupId: Int) {
+fun GroupOverviewScreen(app: App, studentId: Int) {
     // MutableState to hold the lists
     var students by remember { mutableStateOf<List<User>>(emptyList()) }
     var components by remember { mutableStateOf<List<Component>>(emptyList()) }
@@ -140,7 +155,7 @@ fun GroupOverviewScreen(app: App, groupId: Int) {
 
     LaunchedEffect(Unit) {
         val database = app.getDatabase() // Reuse the existing database connection
-        val (fetchedStudents, fetchedComponents) = fetchObjects(database, groupId)
+        val (fetchedStudents, fetchedComponents) = fetchObjects(database, studentId)
 
         // Update the states
         students = fetchedStudents
@@ -151,12 +166,14 @@ fun GroupOverviewScreen(app: App, groupId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        GroupOverviewTable(students, components)
+        GroupOverviewTable(students, components, studentId)
     }
 }
 
 @Composable
-fun GroupOverviewTable(students: List<User>, components: List<Component>) {
+fun GroupOverviewTable(students: List<User>, components: List<Component>, studentId: Int) {
+    val context = LocalContext.current
+
     Column(modifier = Modifier.padding(16.dp)) {
 
         // Row for the group name and student names
@@ -187,7 +204,17 @@ fun GroupOverviewTable(students: List<User>, components: List<Component>) {
                         // LazyColumn for each skill under the component
                         LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)) {
                             items(component.skills) { skill ->
-                                Row(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 2.dp, bottom = 2.dp)) {
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, top = 2.dp, bottom = 2.dp)
+                                    .clickable{
+                                        val intent = Intent(context, SkillActivity::class.java).apply {
+                                            putExtra("studentId", studentId)
+                                            putExtra("skillId", skill.id)
+                                        }
+                                        context.startActivity(intent)
+                                    }
+                                ) {
                                     Text(text = "Skill: ${skill.name}", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(2f))
                                     students.forEach { student ->
                                         val skillScore = skill.scores.find { it.student.id == student.id }?.value ?: 0.0
