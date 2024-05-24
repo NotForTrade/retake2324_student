@@ -47,7 +47,7 @@ class GroupOverviewActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                GroupOverviewScreen(app, studentId)
+                GroupOverviewLoader(app, studentId)
             }
         }
     }
@@ -147,10 +147,10 @@ private suspend fun fetchObjects(database: Database, studentId: Int): Pair<List<
 
 
 @Composable
-fun GroupOverviewScreen(app: App, studentId: Int) {
+fun GroupOverviewLoader(app: App, studentId: Int) {
     // MutableState to hold the lists
-    var students by remember { mutableStateOf<List<User>>(emptyList()) }
-    var components by remember { mutableStateOf<List<Component>>(emptyList()) }
+    var students by remember { mutableStateOf(listOf<User>()) }
+    var components by remember { mutableStateOf(listOf<Component>()) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -166,12 +166,12 @@ fun GroupOverviewScreen(app: App, studentId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        GroupOverviewTable(students, components, studentId)
+        GroupOverviewScreen(students, components, studentId)
     }
 }
 
 @Composable
-fun GroupOverviewTable(students: List<User>, components: List<Component>, studentId: Int) {
+fun GroupOverviewScreen(students: List<User>, components: List<Component>, studentId: Int) {
     val context = LocalContext.current
 
     Column(modifier = Modifier.padding(16.dp)) {

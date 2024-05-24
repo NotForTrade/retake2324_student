@@ -45,7 +45,7 @@ class GroupSynthesisActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                GroupSynthesisScreen(app, groupId)
+                GroupSynthesisLoader(app, groupId)
             }
         }
     }
@@ -126,7 +126,7 @@ private suspend fun fetchObjects(database: Database, groupId: Int): Pair<List<Us
 
 
 @Composable
-fun GroupSynthesisScreen(app: App, groupId: Int) {
+fun GroupSynthesisLoader(app: App, groupId: Int) {
     // MutableState to hold the lists
     var students by remember { mutableStateOf<List<User>>(emptyList()) }
     var components by remember { mutableStateOf<List<Component>>(emptyList()) }
@@ -145,12 +145,12 @@ fun GroupSynthesisScreen(app: App, groupId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        GroupSynthesisTable(students, components)
+        GroupSynthesisScreen(students, components)
     }
 }
 
 @Composable
-fun GroupSynthesisTable(students: List<User>, components: List<Component>) {
+fun GroupSynthesisScreen(students: List<User>, components: List<Component>) {
     Column(modifier = Modifier.padding(16.dp)) {
 
         // Row for the group name and student names

@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.retake2324_student.core.App
+import com.example.retake2324_student.data.Component
 import com.example.retake2324_student.data.Schemas
 import com.example.retake2324_student.data.Score
 import com.example.retake2324_student.data.Skill
@@ -32,7 +33,9 @@ import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.entity.filter
 import org.ktorm.entity.find
+import org.ktorm.entity.isNotEmpty
 import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.toList
 
 class RequestReassessmentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,63 +45,68 @@ class RequestReassessmentActivity : ComponentActivity() {
             val skillId = intent.getIntExtra("skillId", -1)
             val scoreId = intent.getIntExtra("scoreId", -1)
             val studentId = intent.getIntExtra("studentId", -1)
-            //FetchRequestReassessmentData(app, scoreId, skillId, studentId)
+            RequestReassessmentLoader(app, scoreId, skillId, studentId)
         }
     }
 }
-/*
-private suspend fun fetchObjects(database: Database, skillId: Int, studentId: Int): Pair<Skill, Score> {
+
+private suspend fun fetchObjects(database: Database, studentId: Int): List<Component> {
 
     try {
         // Fetch the skill
-        val skill = withContext(Dispatchers.IO) {
-            database.sequenceOf(Schemas.Skills).find { it.Id eq skillId }
+        val components = withContext(Dispatchers.IO) {
+            database.sequenceOf(Schemas.Components).toList()
         }
-        if (skill != null) {
-            // Fetch the associated score
-            val score = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Scores)
-                    .filter { it.SkillId eq skillId }
-                    .find { it.StudentId eq studentId }
+        val skills = withContext(Dispatchers.IO) {
+            database.sequenceOf(Schemas.Skills).toList()
+        }
+        val scores = withContext(Dispatchers.IO) {
+            database.sequenceOf(Schemas.Scores).filter { it.StudentId eq studentId }.toList()
+        }
+
+        // Associate the skills to their component
+        if (components.isNotEmpty() and skills.isNotEmpty()) {
+            components.forEach {component ->
+                component.skills = skills.filter { it.component.id == component.id }
+                // Associate the scores to the skills
+                if (component.skills.isNotEmpty() and scores.isNotEmpty()) {
+                    component.skills.forEach {skill ->
+                        skill.scores = scores.filter { it.skill.id == skill.id }
+                    }
+                }
+
             }
-            if (score != null) {
-                return Pair(skill, score)
-            } else {
-                Log.i("MISSING ENTRY", "Score with skillId $skillId and studentId $studentId not found on the database!")
-                return Pair(skill, Score())
-            }
+            return components
         } else {
-            Log.e("MISSING ENTRY", "Skill with id $skillId not found on the database!")
-            return Pair(Skill(), Score())
+            Log.e("SQL FETCHING ERROR", "NO COMPONENT FOUND")
+            return listOf<Component>()
         }
     } catch (e: Exception) {
         Log.e("SQL FETCHING ERROR", e.toString())
-        return Pair(Skill(), Score())
+        return listOf<Component>()
     }
 }
 
 
 @Composable
-fun FetchRequestReassessmentData(app: App, skillId: Int, scoreId: Int, studentId: Int) {
+fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: Int) {
     // MutableState to hold values
-    var skill by remember { mutableStateOf(Skill()) }
-    var score by remember { mutableStateOf(Score()) }
+    var components by remember { mutableStateOf(listOf<Component>()) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         val database = app.getDatabase() // Reuse the existing database connection
-        var (fetchedSkill, fetchedScore) = fetchObjects(database, skillId, studentId)
+        var fetchedComponents = fetchObjects(database, studentId)
 
         // Update the states
-        skill = fetchedSkill
-        score = fetchedScore
+        components = fetchedComponents
         isLoading = false
     }
 
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        RequestReassessmentScreen(skill, score)
+        RequestReassessmentScreen(components)
     }
 }
 
@@ -106,7 +114,7 @@ fun FetchRequestReassessmentData(app: App, skillId: Int, scoreId: Int, studentId
 
 
 @Composable
-fun RequestReassessmentScreen(skill: Skill, score: Score) {
+fun RequestReassessmentScreen(components: List<Component>) {
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
 
@@ -116,34 +124,6 @@ fun RequestReassessmentScreen(skill: Skill, score: Score) {
         selectedFileUri = uri
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Component: $skill.component.name", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
-        Text(text = "Skill: $skill.name", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { filePickerLauncher.launch("") },
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) {
-            Text(text = "Upload File")
-        }
-
-        Button(
-            onClick = {
-                // Handle the file submission logic here
-            },
-            enabled = selectedFileUri != null
-        ) {
-            Text(text = "Submit")
-        }
-    }
 }
 
- */

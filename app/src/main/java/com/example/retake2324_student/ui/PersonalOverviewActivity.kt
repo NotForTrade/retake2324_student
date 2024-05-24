@@ -47,7 +47,7 @@ class PersonalOverviewActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                PersonalOverviewScreen(app, studentId)
+                PersonalOverviewLoader(app, studentId)
             }
         }
     }
@@ -138,7 +138,7 @@ private suspend fun fetchObjects(database: Database, studentId: Int): Pair<User,
 
 
 @Composable
-fun PersonalOverviewScreen(app: App, studentId: Int) {
+fun PersonalOverviewLoader(app: App, studentId: Int) {
     // MutableState to hold the lists
     var student by remember { mutableStateOf(User()) }
     var components by remember { mutableStateOf<List<Component>>(emptyList()) }
@@ -157,12 +157,12 @@ fun PersonalOverviewScreen(app: App, studentId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        PersonalOverviewTable(student, components)
+        PersonalOverviewScreen(student, components)
     }
 }
 
 @Composable
-fun PersonalOverviewTable(student: User, components: List<Component>) {
+fun PersonalOverviewScreen(student: User, components: List<Component>) {
     val context = LocalContext.current
 
     Column(modifier = Modifier.padding(16.dp)) {

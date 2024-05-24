@@ -54,15 +54,15 @@ class SkillActivity: ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                //FetchSkillData(app, skillId, studentId)
+                SkillLoader(app, skillId, studentId)
             }
         }
     }
 }
-/*
 
 
-private suspend fun fetchObject(database: Database, skillId: Int, studentId: Int): Pair<Skill, Score> {
+
+private suspend fun fetchObjects(database: Database, skillId: Int, studentId: Int): Pair<Skill, Score> {
 
     try {
         // Fetch the skill
@@ -94,7 +94,7 @@ private suspend fun fetchObject(database: Database, skillId: Int, studentId: Int
 
 
 @Composable
-fun FetchSkillData(app: App, skillId: Int, studentId: Int) {
+fun SkillLoader(app: App, skillId: Int, studentId: Int) {
     // MutableState to hold values
     var skill by remember { mutableStateOf(Skill()) }
     var score by remember { mutableStateOf(Score()) }
@@ -102,7 +102,7 @@ fun FetchSkillData(app: App, skillId: Int, studentId: Int) {
 
     LaunchedEffect(Unit) {
         val database = app.getDatabase() // Reuse the existing database connection
-        var (fetchedSkill, fetchedScore) = fetchObject(database, skillId, studentId)
+        var (fetchedSkill, fetchedScore) = fetchObjects(database, skillId, studentId)
 
         // Update the states
         skill = fetchedSkill
@@ -113,12 +113,12 @@ fun FetchSkillData(app: App, skillId: Int, studentId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        skillScreen(skill, score.id, studentId)
+        skillScreen(skill, score, studentId)
     }
 }
 
 @Composable
-fun skillScreen(skill: Skill, scoreId: Int, studentId: Int) {
+fun skillScreen(skill: Skill, score: Score, studentId: Int) {
     val context = LocalContext.current
 
     Column(
@@ -126,12 +126,18 @@ fun skillScreen(skill: Skill, scoreId: Int, studentId: Int) {
             .padding(16.dp)
             .fillMaxSize()
     ) {
-        Text(text = "Component: ${skill.component}", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
+        Text(text = "Component: ${skill.component.name}", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
         Text(text = "Name: ${skill.name}", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
         Text(text = "Coefficient: ${skill.coefficient}", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
         Text(text = "Description: ${skill.description}", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = if (score.value != 0.0) "Score: ${score.value}" else "Not evaluated",
+            fontSize = 20.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         Button(
 
@@ -139,7 +145,7 @@ fun skillScreen(skill: Skill, scoreId: Int, studentId: Int) {
                 // Start RequestReassessmentActivity and pass the scoreId
                 val intent = Intent(context, RequestReassessmentActivity::class.java)
                 intent.putExtra("skillId", skill.id)
-                intent.putExtra("scoreId", scoreId)
+                intent.putExtra("scoreId", score.id)
                 intent.putExtra("studentId", studentId)
 
                 context.startActivity(intent)
@@ -152,5 +158,3 @@ fun skillScreen(skill: Skill, scoreId: Int, studentId: Int) {
 
 }
 
-
- */

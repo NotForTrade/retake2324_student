@@ -45,7 +45,7 @@ class PersonalSynthesisActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                PersonalSynthesisScreen(app, studentId)
+                PersonalSynthesisLoader(app, studentId)
             }
         }
     }
@@ -132,7 +132,7 @@ private suspend fun fetchObjects(database: Database, studentId: Int): Pair<User,
 
 
 @Composable
-fun PersonalSynthesisScreen(app: App, studentId: Int) {
+fun PersonalSynthesisLoader(app: App, studentId: Int) {
     // MutableState to hold the lists
     var student by remember { mutableStateOf(User()) }
     var components by remember { mutableStateOf<List<Component>>(emptyList()) }
@@ -151,12 +151,12 @@ fun PersonalSynthesisScreen(app: App, studentId: Int) {
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        PersonalSynthesisTable(student, components)
+        PersonalSynthesisScreen(student, components)
     }
 }
 
 @Composable
-fun PersonalSynthesisTable(student: User, components: List<Component>) {
+fun PersonalSynthesisScreen(student: User, components: List<Component>) {
     Column(modifier = Modifier.padding(16.dp)) {
 
         // Row for the group name and student name
