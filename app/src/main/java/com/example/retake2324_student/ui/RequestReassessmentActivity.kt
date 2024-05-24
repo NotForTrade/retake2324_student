@@ -109,7 +109,6 @@ private suspend fun fetchObjects(database: Database, studentId: Int, skillId: In
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: Int) {
     // MutableState to hold values
@@ -137,7 +136,6 @@ fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: I
 
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RequestReassessmentScreen(app: App, components: List<Component>, skill: Skill?, studentId: Int, scoreId: Int) {
     val context = LocalContext.current
