@@ -43,12 +43,12 @@ import org.ktorm.entity.sequenceOf
 
 class PersonalSynthesisActivity : ComponentActivity() {
 
-    private val studentId = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val app = application as App
+
+        val studentId = intent.getIntExtra("studentId", -1)
 
         setContent {
             MaterialTheme {
