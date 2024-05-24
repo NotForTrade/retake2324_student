@@ -4,14 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.retake2324_student.core.App
 import com.example.retake2324_student.data.Component
@@ -161,40 +167,70 @@ class PersonalSynthesisActivity : ComponentActivity() {
 
     @Composable
     fun PersonalSynthesisScreen(student: User, components: List<Component>) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        val context = LocalContext.current
+        val columnWidths = listOf(200.dp) + listOf(100.dp)
 
-            // Row for the group name and student name
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                Text(
-                    text = "Group: ${student.group.name}",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(2f)
-                )
-                Text(
-                    text = student.firstName + " " + student.lastName,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            // LazyColumn for each component under group
-            if (components.isNotEmpty()) {
-                LazyColumn(modifier = Modifier.padding(16.dp).fillMaxHeight()) {
-                    items(components) { component ->
-                        // Component row
-                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Scaffold(
+            topBar = { Header("Personal Synthesis") },
+            bottomBar = { Footer(student.id) }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
+            ) {
+                // Outer Box with horizontal scrolling
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        // Row for the group name and student name
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        ) {
                             Text(
-                                text = "Component: ${component.name}",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.weight(2f)
+                                text = "Group: ${student.group.name}",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.width(columnWidths[0])
                             )
-                            val score =
-                                component.scores.find { it.student.id == student.id }?.value ?: 0.0
                             Text(
-                                text = "$score",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.weight(1f)
+                                text = student.firstName + " " + student.lastName,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.width(columnWidths[1])
                             )
+                        }
+                        // LazyColumn for components and skills
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(components) { component ->
+                                // Component row
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "Component: ${component.name}",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier
+                                            .width(columnWidths[0])
+                                    )
+                                    val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                    Text(
+                                        text = "$score",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.width(columnWidths[1])
+                                    )
+                                }
+                            }
                         }
                     }
                 }

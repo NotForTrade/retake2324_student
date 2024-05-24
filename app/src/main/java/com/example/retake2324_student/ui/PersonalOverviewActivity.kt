@@ -6,15 +6,19 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -170,75 +174,111 @@ class PersonalOverviewActivity : ComponentActivity() {
     @Composable
     fun PersonalOverviewScreen(student: User, components: List<Component>) {
         val context = LocalContext.current
+        val expandedComponents = remember { mutableStateOf(components.map { it.id }.toSet()) }
 
-        Column(modifier = Modifier.padding(16.dp)) {
+        val columnWidths = listOf(200.dp) + listOf(100.dp)
 
-            // Row for the group name and student names
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                Text(
-                    text = "Group: ${student.group.name}",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(2f)
-                )
-                Text(
-                    text = student.firstName + " " + student.lastName,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
+        Scaffold(
+            topBar = { Header("Personal Overview") },
+            bottomBar = { Footer(student.id) }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
+            ) {
+                // Outer Box with horizontal scrolling
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        // Row for the group name and student name
 
-            }
-
-
-            // LazyColumn for each component under group
-            if (components.isNotEmpty()) {
-                LazyColumn(modifier = Modifier.padding(16.dp).fillMaxHeight()) {
-                    items(components) { component ->
-                        // Component row
-                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                            Text(
-                                text = "Component: ${component.name}",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.weight(2f)
-                            )
-                            val score =
-                                component.scores.find { it.student.id == student.id }?.value ?: 0.0
-                            Text(
-                                text = "$score",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        if (component.skills.isNotEmpty()) {
-                            // LazyColumn for each skill under the component
-                            LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp)) {
-                                items(component.skills) { skill ->
-                                    Row(modifier = Modifier
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                Text(
+                                    text = "Group: ${student.group.name}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.width(columnWidths[0])
+                                )
+                                Text(
+                                    text = student.firstName + " " + student.lastName,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.width(columnWidths[1])
+                                )
+                            }
+                        // LazyColumn for components and skills
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(components) { component ->
+                                val isExpanded = expandedComponents.value.contains(component.id)
+                                // Component row
+                                Row(
+                                    modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 16.dp, top = 2.dp, bottom = 2.dp)
-                                        .clickable {
-                                            val intent = Intent(
-                                                context,
-                                                SkillActivity::class.java
-                                            ).apply {
-                                                putExtra("studentId", student.id)
-                                                putExtra("skillId", skill.id)
+                                        .padding(vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "Component: ${component.name}",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier
+                                            .width(columnWidths[0])
+                                            .clickable {
+                                                expandedComponents.value = if (isExpanded) {
+                                                    expandedComponents.value - component.id
+                                                } else {
+                                                    expandedComponents.value + component.id
+                                                }
                                             }
-                                            context.startActivity(intent)
+                                    )
+                                    val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                    Text(
+                                        text = "$score",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.width(columnWidths[1])
+                                    )
+                                }
+
+                                // Skill rows under each component
+                                if (isExpanded) {
+                                    component.skills.forEach { skill ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 2.dp, bottom = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = "Skill: ${skill.name}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier
+                                                    .width(columnWidths[0])
+                                                    .clickable {
+                                                        val intent = Intent(
+                                                            context,
+                                                            SkillActivity::class.java
+                                                        ).apply {
+                                                            putExtra("studentId", studentId)
+                                                            putExtra("skillId", skill.id)
+                                                        }
+                                                        context.startActivity(intent)
+                                                    }
+                                            )
+                                            val skillScore = skill.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                            Text(
+                                                text = "$skillScore",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier.width(columnWidths[1])
+                                            )
                                         }
-                                    ) {
-                                        Text(
-                                            text = "Skill: ${skill.name}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.weight(2f)
-                                        )
-                                        val skillScore =
-                                            skill.scores.find { it.student.id == student.id }?.value
-                                                ?: 0.0
-                                        Text(
-                                            text = "$skillScore",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            modifier = Modifier.weight(1f)
-                                        )
                                     }
                                 }
                             }

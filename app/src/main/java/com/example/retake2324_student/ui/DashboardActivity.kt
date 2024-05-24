@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 
 class DashboardActivity : ComponentActivity() {
 
+    private val studentId = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -35,7 +37,7 @@ class DashboardActivity : ComponentActivity() {
     fun DashboardScreen() {
         Scaffold(
             topBar = { Header("Dashboard") },
-            bottomBar = { Footer() }
+            bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(
                 modifier = Modifier
@@ -51,6 +53,7 @@ class DashboardActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     val intent = Intent(this@DashboardActivity, PersonalOverviewActivity::class.java)
+                                    intent.putExtra("studentId", studentId)
                                     startActivity(intent)
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -63,6 +66,7 @@ class DashboardActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     val intent = Intent(this@DashboardActivity, PersonalSynthesisActivity::class.java)
+                                    intent.putExtra("studentId", studentId)
                                     startActivity(intent)
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -77,6 +81,7 @@ class DashboardActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     val intent = Intent(this@DashboardActivity, GroupOverviewActivity::class.java)
+                                    intent.putExtra("studentId", studentId)
                                     startActivity(intent)
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -89,6 +94,7 @@ class DashboardActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     val intent = Intent(this@DashboardActivity, GroupSynthesisActivity::class.java)
+                                    intent.putExtra("studentId", studentId)
                                     startActivity(intent)
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -104,6 +110,7 @@ class DashboardActivity : ComponentActivity() {
                     Button(
                         onClick = {
                             val intent = Intent(this@DashboardActivity, RequestReassessmentActivity::class.java)
+                            intent.putExtra("studentId", studentId)
                             startActivity(intent)
                         },
                         modifier = Modifier.fillMaxWidth()

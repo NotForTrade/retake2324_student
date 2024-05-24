@@ -190,7 +190,7 @@ class GroupOverviewActivity : ComponentActivity() {
 
         Scaffold(
             topBar = { Header("Group Overview") },
-            bottomBar = { Footer() }
+            bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(
                 modifier = Modifier

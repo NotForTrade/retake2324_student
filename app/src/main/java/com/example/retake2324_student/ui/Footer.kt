@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Footer() {
+fun Footer(studentId: Int) {
     val context = LocalContext.current
     BottomAppBar(
         content = {
@@ -27,6 +27,7 @@ fun Footer() {
                 selected = false,
                 onClick = {
                     val intent = Intent(context, ProfileActivity::class.java)
+                    intent.putExtra("studentId", studentId)
                     context.startActivity(intent) }
             )
             BottomNavigationItem(
@@ -35,6 +36,7 @@ fun Footer() {
                 selected = true,
                 onClick = {
                     val intent = Intent(context, DashboardActivity::class.java)
+                    intent.putExtra("studentId", studentId)
                     context.startActivity(intent) }
             )
             BottomNavigationItem(
