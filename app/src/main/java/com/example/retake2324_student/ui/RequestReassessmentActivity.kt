@@ -2,6 +2,7 @@ package com.example.retake2324_student.ui
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -13,9 +14,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,7 +108,7 @@ fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: I
 
     LaunchedEffect(Unit) {
         val database = app.getDatabase() // Reuse the existing database connection
-        var (fetchedComponents, fetchedSkill) = fetchObjects(database, studentId, skillId)
+        val (fetchedComponents, fetchedSkill) = fetchObjects(database, studentId, skillId)
 
         // Update the states
         components = fetchedComponents
@@ -127,13 +128,24 @@ fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: I
 
 @Composable
 fun RequestReassessmentScreen(components: List<Component>, skill: Skill?) {
-    var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
+
+    var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedFileBase64 by remember { mutableStateOf<String?>(null) }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         selectedFileUri = uri
+        uri?.let {
+            val contentResolver = context.contentResolver
+            val inputStream = contentResolver.openInputStream(uri)
+            inputStream?.use { stream ->
+                val bytes = stream.readBytes()
+                selectedFileBase64 = Base64.encodeToString(bytes, Base64.DEFAULT)
+                Log.d("BASE64", "File converted to Base64: $selectedFileBase64")
+            }
+        }
     }
 
     // Components' box variables
@@ -169,6 +181,8 @@ fun RequestReassessmentScreen(components: List<Component>, skill: Skill?) {
                         selectedComponent = component
                         componentsBoxExpanded = false
                         selectedSkill = null
+                        selectedFileUri = null
+                        selectedFileBase64 = null
                         Log.d("SELECT CHECK", "Selected Component: ${component.name}") // Debug log
 
                     }
@@ -197,10 +211,39 @@ fun RequestReassessmentScreen(components: List<Component>, skill: Skill?) {
                     onClick = {
                         selectedSkill = skill
                         skillsBoxExpanded = false
+                        selectedFileUri = null
+                        selectedFileBase64 = null
                     }
                 )
             }
         }
+
+        // Upload File Button
+        Button(
+            onClick = { filePickerLauncher.launch("*/*") },
+            enabled = selectedComponent != null && selectedSkill != null,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Upload File")
+        }
+
+        // Display selected file URI
+        selectedFileUri?.let {
+            Text(text = "Selected File: ${it.path}", modifier = Modifier.padding(top = 8.dp))
+        }
+
+        // Submit Button
+        Button(
+            onClick = {
+                // Handle submit action here
+                Log.d("SUBMIT", "File submitted with Base64: $selectedFileBase64")
+            },
+            enabled = selectedFileUri != null,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Submit")
+        }
+
     }
 }
 

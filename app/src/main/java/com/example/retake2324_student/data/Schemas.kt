@@ -2,6 +2,7 @@ package com.example.retake2324_student.data
 
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
+import java.time.LocalDateTime
 
 
 interface Announcement : Entity<Announcement> {
@@ -10,7 +11,7 @@ interface Announcement : Entity<Announcement> {
     var tutor: User
     var title: String
     var content: String
-    var datetime: String
+    var datetime: LocalDateTime
 }
 
 interface AttendanceState : Entity<AttendanceState> {
@@ -85,7 +86,7 @@ interface Skill : Entity<Skill> {
 
 interface GroupSkillMapping : Entity<GroupSkillMapping> {
     companion object : Entity.Factory<GroupSkillMapping>()
-    var id:  Int
+    var id: Int
     var skill: Skill
     var group: Group
     var observation: String
@@ -93,12 +94,22 @@ interface GroupSkillMapping : Entity<GroupSkillMapping> {
 
 interface Score : Entity<Score> {
     companion object : Entity.Factory<Score>()
-    var id:  Int
+    var id: Int
     var student: User
     var skill: Skill
     var value: Double
     var observation: String
+}
+
+interface Reassessment: Entity<Reassessment> {
+    companion object: Entity.Factory<Reassessment>()
+    var id: Int
+    var student: User
+    var skill: Skill
+    var score: Score
     var document: String
+    var datetime: LocalDateTime
+    var treated: Boolean
 }
 
 object Schemas {
@@ -108,7 +119,7 @@ object Schemas {
         val TutorId = int("tutor_id").references(Users) { it.tutor }
         val Title = varchar("title").bindTo { it.title }
         val Content = varchar("content").bindTo { it.content }
-        val DateTime = varchar("datetime").bindTo { it.datetime }
+        val DateTime = datetime("datetime").bindTo { it.datetime }
     }
 
     object AttendanceStates : Table<AttendanceState>("attendance_status") {
@@ -174,7 +185,16 @@ object Schemas {
         val SkillId = int("skill_id").references(Skills) { it.skill }
         val value = double("value").bindTo { it.value }
         val Observation = varchar("observation").bindTo { it.observation }
+    }
+
+    object Reassessments: Table<Reassessment>("reassessment") {
+        val Id = int("id").primaryKey().bindTo { it.id }
+        val StudentId = int("student_id").references(Users) { it.student }
+        val SkillId = int("skill_id").references(Skills) { it.skill }
+        val ScoreId = int("score_id").references(Scores) { it.score }
         val Document = varchar("document").bindTo { it.document }
+        val Datetime = datetime("datetime").bindTo { it.datetime }
+        val Treated = boolean("treated").bindTo { it.treated }
     }
 
 }
