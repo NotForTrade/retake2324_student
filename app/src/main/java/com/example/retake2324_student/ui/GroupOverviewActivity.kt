@@ -120,7 +120,6 @@ private suspend fun fetchObjects(database: Database, studentId: Int): Pair<List<
                                         skill // not used
                                         this.value = if (coefficientSum!=0.0) weightedScoreSum/coefficientSum else 0.0
                                         observation // not used
-                                        document // not used
                                     })
                                 }
                             }

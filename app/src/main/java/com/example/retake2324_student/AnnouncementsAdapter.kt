@@ -32,7 +32,7 @@ class AnnouncementsAdapter(private val announcements: List<Announcement>) :
 
         fun bind(announcement: Announcement) {
             textAuthor.text = announcement.tutor.firstName + " " + announcement.tutor.lastName
-            textDate.text = announcement.datetime
+            textDate.text = announcement.datetime.toString()
             textTitle.text = announcement.title
             textContent.text = announcement.content
 

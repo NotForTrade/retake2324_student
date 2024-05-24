@@ -107,7 +107,6 @@ private suspend fun fetchObjects(database: Database, studentId: Int): Pair<User,
                                     skill // not used
                                     this.value = if (coefficientSum!=0.0) weightedScoreSum/coefficientSum else 0.0
                                     observation // not used
-                                    document // not used
                                 })
                             }
                             // Assign the new built score list to the component

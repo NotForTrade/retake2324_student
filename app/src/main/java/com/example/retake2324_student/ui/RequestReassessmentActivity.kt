@@ -1,6 +1,8 @@
 package com.example.retake2324_student.ui
 
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -8,12 +10,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -32,16 +36,22 @@ import com.example.retake2324_student.core.App
 import com.example.retake2324_student.data.Component
 import com.example.retake2324_student.data.Schemas
 import com.example.retake2324_student.data.Skill
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
+import org.ktorm.dsl.insert
 import org.ktorm.entity.filter
 import org.ktorm.entity.sequenceOf
 import org.ktorm.entity.toList
 
 
+
+
 class RequestReassessmentActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val app = application as App
@@ -99,6 +109,7 @@ private suspend fun fetchObjects(database: Database, studentId: Int, skillId: In
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: Int) {
     // MutableState to hold values
@@ -119,19 +130,23 @@ fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: I
     if (isLoading) {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     } else {
-        RequestReassessmentScreen(components, skill)
+        RequestReassessmentScreen(app, components, skill, studentId, scoreId)
     }
 }
 
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RequestReassessmentScreen(components: List<Component>, skill: Skill?) {
+fun RequestReassessmentScreen(app: App, components: List<Component>, skill: Skill?, studentId: Int, scoreId: Int) {
     val context = LocalContext.current
 
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
     var selectedFileBase64 by remember { mutableStateOf<String?>(null) }
+
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogMessage by remember { mutableStateOf("") }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -236,7 +251,36 @@ fun RequestReassessmentScreen(components: List<Component>, skill: Skill?) {
         Button(
             onClick = {
                 // Handle submit action here
-                Log.d("SUBMIT", "File submitted with Base64: $selectedFileBase64")
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+
+                        val database = app.getDatabase()
+                        database.insert(Schemas.Reassessments) {
+                            set(it.StudentId, studentId)
+                            set(it.SkillId, selectedSkill!!.id)
+                            set(it.ScoreId, if (scoreId > 0) scoreId else null)
+                            set(it.Document, selectedFileBase64!!)
+                            set(it.Treated, false)
+                        }
+                        Log.d("SUBMIT", "File submitted with Base64: $selectedFileBase64")
+
+                        // Reinitialize the selectors
+                        selectedComponent = null
+                        selectedSkill = null
+                        selectedFileUri = null
+                        selectedFileBase64 = null
+
+                        // Show success dialog
+                        dialogMessage = "Request submitted successfully"
+                        showDialog = true
+
+                    } catch (e: Exception) {
+                        Log.e("SUBMIT", "Error submitting file: ${e.message}")
+                        dialogMessage = "An error occurred: ${e.message}"
+                        showDialog = true
+
+                    }
+                }
             },
             enabled = selectedFileUri != null,
             modifier = Modifier.padding(top = 16.dp)
@@ -244,8 +288,22 @@ fun RequestReassessmentScreen(components: List<Component>, skill: Skill?) {
             Text("Submit")
         }
 
+        // Show Dialog if needed
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Submission Status") },
+                text = { Text(dialogMessage) },
+                confirmButton = {
+                    Button(
+                        onClick = { showDialog = false }
+                    ) {
+                        Text("Ok")
+                    }
+                }
+            )
+        }
     }
 }
-
 
 

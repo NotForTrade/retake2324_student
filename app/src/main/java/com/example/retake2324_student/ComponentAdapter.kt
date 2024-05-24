@@ -78,7 +78,6 @@ class ComponentAdapter(private val components: List<Component>, private val stud
                 skill
                 value = componentScore
                 observation
-                document
             }
 
             studentScores.add(studentScore)
