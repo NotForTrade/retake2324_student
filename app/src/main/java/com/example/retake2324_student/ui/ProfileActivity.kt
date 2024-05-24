@@ -1,102 +1,142 @@
 package com.example.retake2324_student.ui
 
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import kotlinx.coroutines.CoroutineScope
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.retake2324_student.core.App
+import com.example.retake2324_student.data.Component
+import com.example.retake2324_student.data.Schemas
+import com.example.retake2324_student.data.Score
+import com.example.retake2324_student.data.User
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.entity.find
+import org.ktorm.entity.toList
 import org.ktorm.entity.sequenceOf
-import android.text.util.Linkify
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
-import com.example.retake2324_student.EmptyDbListResultException
-import com.example.retake2324_student.R
-import com.example.retake2324_student.core.App
-import com.example.retake2324_student.data.Schemas
 
 
-class ProfileActivity : BaseActivity() {
-
-    private lateinit var errorTextView: TextView
-    private var userID = 1
+class ProfileActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val app = application as App
 
-        // Start the coroutine to call the database related instructions
-        CoroutineScope(Dispatchers.Main).launch {
-            val database = app.getDatabase() // Reuse the existing database connection
-            loadAndDisplayComponents(database, userID)
-        }
+        val studentId = intent.getIntExtra("studentId", -1)
+        // Only fetching from profileId to avoid risks
+        val profileId = intent.getIntExtra("studentId", -1)
 
+        setContent {
+            MaterialTheme {
+                ProfileLoader(app, studentId, profileId)
+            }
+        }
     }
 
-    private suspend fun loadAndDisplayComponents(database: Database, userID: Int) {
-        val app = application as App
+
+    private suspend fun fetchObjects(database: Database, profileId: Int): User {
 
         try {
-
-            // Fetch user data
-            val user = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).find { it.Id eq userID }
+            // Fetch the profile
+            val profile = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Users).find { it.Id eq profileId }
             }
-
-            if (user != null) {
-
-                // bind the field's id to a variable
-                val textRole: TextView = findViewById(R.id.textRole)
-                val textName: TextView = findViewById(R.id.textName)
-                val textEmail: TextView = findViewById(R.id.textEmail)
-                val imagePhoto: ImageView = findViewById(R.id.imagePhoto)
-
-                // Set the values from the fetched object to the
-                textRole.text = user!!.role.name
-                textName.text = user!!.firstName + " " + user!!.lastName
-                textEmail.text = user!!.email.toString()
-
-                // Load the photo
-                // imagePhoto.setImageBitmap(base64ToBitmap(user.photo))
-
-                // Add the hypertext link on the email address
-                Linkify.addLinks(textEmail, Linkify.EMAIL_ADDRESSES)
-
+            if (profile != null) {
+                return profile
+            } else {
+                Log.e("SQL FETCHING ERROR", "User with $profileId not found on the database!")
+                return User()
             }
-            else {
-                app.displayException(EmptyDbListResultException("No components found"))
-            }
-
         } catch (e: Exception) {
-            app.displayException(e)
+            Log.e("SQL FETCHING ERROR", e.toString())
+            return User()
         }
     }
 
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_profile
+
+    @Composable
+    fun ProfileLoader(app: App, studentId: Int, profileId: Int) {
+        // MutableState to hold the lists
+        var profile by remember { mutableStateOf(User()) }
+        var isLoading by remember { mutableStateOf(true) }
+
+        LaunchedEffect(Unit) {
+            val database = app.getDatabase() // Reuse the existing database connection
+            val fetchedProfile = fetchObjects(database, studentId)
+
+            // Update the states
+            profile = fetchedProfile
+            isLoading = false
+        }
+
+        if (isLoading) {
+            Text(text = "Loading...", modifier = Modifier.padding(16.dp))
+        } else {
+            ProfileScreen(profile, studentId)
+        }
     }
 
-    private fun displayError(message: String) {
-        errorTextView.text = message
-        errorTextView.visibility = View.VISIBLE
-    }
+    @Composable
+    fun ProfileScreen(profile: User, studentId: Int) {
+        val context = LocalContext.current
+        val columnWidths = listOf(200.dp) + listOf(100.dp)
 
-
-    private fun base64ToByteArray(base64Str: String): ByteArray {
-        return Base64.decode(base64Str, Base64.DEFAULT)
+        Scaffold(
+            topBar = { Header("Personal Synthesis") },
+            bottomBar = { Footer(studentId) }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                ) {
+                Text(text = "Role: ${profile.role.name}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(
+                    text = if (profile.role.name == "Student") "Group: ${profile.group.name}" else "Component: ${profile.component.name}",
+                    fontSize = 16.sp
+                )
+                Text(text = "Name: ${profile.firstName + " " + profile.lastName}", fontSize = 16.sp)
+                Text(text = "Email: ${profile.email}", fontSize = 16.sp, modifier = Modifier.clickable{})
+            }
+                /*Image(
+                    painter = rememberImagePainter(data = profile.photo),
+                    contentDescription = "${profile.firstName + " " + profile.lastName}'s photo",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(16.dp),
+                    contentScale = ContentScale.Crop
+                )*/
+            }
+        }
     }
-    private fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-    }
-    private fun base64ToBitmap(base64Str: String): Bitmap {
-        val byteArray = base64ToByteArray(base64Str)
-        return byteArrayToBitmap(byteArray)
-    }
-
 }

@@ -28,6 +28,7 @@ fun Footer(studentId: Int) {
                 onClick = {
                     val intent = Intent(context, ProfileActivity::class.java)
                     intent.putExtra("studentId", studentId)
+                    intent.putExtra("profileId", studentId)
                     context.startActivity(intent) }
             )
             BottomNavigationItem(
