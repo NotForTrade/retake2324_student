@@ -1,15 +1,38 @@
-*.iml
+# Android Studio
+.idea
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+build
+local.properties
 .DS_Store
-/build
-/captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Cache
+.cache
+/.caches
+caches/
+/caches/
+/out
+
+# Gradle
+/build
+**/build/
+
+# Kotlin
+*.kotlin_module
+
+# Android
+.cxx/
+.idea/
+.gradle/
+.local.properties
+.DS_Store
+/captures/
+.externalNativeBuild/
+
+# Other
+*.iml
+*.hprof
+*.log
+*.class
+*.apk
