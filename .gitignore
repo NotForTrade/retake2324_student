@@ -6,6 +6,10 @@ local.properties
 .DS_Store
 .externalNativeBuild
 .cxx
+wrapper/
+native/
+daemon/
+
 
 # Cache
 .cache
@@ -17,7 +21,6 @@ caches/
 # Gradle
 /build
 **/build/
-wrapper/
 
 
 # Kotlin
@@ -33,7 +36,8 @@ wrapper/
 .externalNativeBuild/
 
 # Other
-*/jar
+*.TAG
+*.jar
 *.iml
 *.hprof
 *.log
