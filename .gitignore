@@ -17,6 +17,8 @@ caches/
 # Gradle
 /build
 **/build/
+wrapper/
+
 
 # Kotlin
 *.kotlin_module
