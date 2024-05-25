@@ -178,19 +178,19 @@ class GroupOverviewActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            GroupOverviewScreen(students, components, studentId)
+            GroupOverviewScreen(app, students, components, studentId)
         }
     }
 
     @Composable
-    fun GroupOverviewScreen(students: List<User>, components: List<Component>, studentId: Int) {
+    fun GroupOverviewScreen(app: App, students: List<User>, components: List<Component>, studentId: Int) {
         val context = LocalContext.current
         val expandedComponents = remember { mutableStateOf(components.map { it.id }.toSet()) }
 
         val columnWidths = listOf(200.dp) + List(students.size) { 100.dp }
 
         Scaffold(
-            topBar = { Header("Group Overview") },
+            topBar = { Header("Group Overview", app) },
             bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(

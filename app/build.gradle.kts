@@ -72,6 +72,7 @@ dependencies {
 
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.work.runtime.ktx)
 
     testImplementation(libs.junit)
 

@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.retake2324_student.core.App
 
 
 class DashboardActivity : ComponentActivity() {
@@ -28,15 +29,18 @@ class DashboardActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val app = application as App
+
         setContent {
-            DashboardScreen()
+            DashboardScreen(app)
         }
     }
 
     @Composable
-    fun DashboardScreen() {
+    fun DashboardScreen(app: App) {
         Scaffold(
-            topBar = { Header("Dashboard") },
+            topBar = { Header("Dashboard", app) },
             bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(

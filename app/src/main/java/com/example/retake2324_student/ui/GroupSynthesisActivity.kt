@@ -157,17 +157,17 @@ class GroupSynthesisActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            GroupSynthesisScreen(students, components, studentId)
+            GroupSynthesisScreen(app, students, components, studentId)
         }
     }
 
     @Composable
-    fun GroupSynthesisScreen(students: List<User>, components: List<Component>, studentId: Int) {
+    fun GroupSynthesisScreen(app: App, students: List<User>, components: List<Component>, studentId: Int) {
         val context = LocalContext.current
         val columnWidths = listOf(200.dp) + List(students.size) { 100.dp }
 
         Scaffold(
-            topBar = { Header("Group Synthesis") },
+            topBar = { Header("Group Synthesis", app) },
             bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(

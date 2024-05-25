@@ -97,17 +97,17 @@ class AnnouncementsActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            AnnouncementsScreen(announcements, studentId)
+            AnnouncementsScreen(app, announcements, studentId)
         }
     }
 
     @Composable
-    fun AnnouncementsScreen(announcements: List<Announcement>, studentId: Int) {
+    fun AnnouncementsScreen(app: App, announcements: List<Announcement>, studentId: Int) {
         val context = LocalContext.current
         var expandedStates by remember { mutableStateOf(List(announcements.size) { false }) }
 
         Scaffold(
-            topBar = { Header("Announcements") },
+            topBar = { Header("Announcements", app) },
             bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(
@@ -116,34 +116,40 @@ class AnnouncementsActivity : ComponentActivity() {
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-
                 if (announcements.isNotEmpty()) {
-                    announcements.forEachIndexed {index, announcement ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                                .animateContentSize(),
-                            onClick = {
-                                expandedStates = expandedStates.toMutableList().apply {
-                                    this[index] = !this[index]
-                                }
-                            }
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column {
-                                        Text(text = announcement.title, style = MaterialTheme.typography.titleLarge)
-                                        Text(text = "By ${announcement.tutor.firstName + " " + announcement.tutor.lastName}", style = MaterialTheme.typography.bodyMedium)
-                                        Text(text = announcement.datetime.toString(), style = MaterialTheme.typography.bodySmall)
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(announcements.size) { index ->
+                            val announcement = announcements[index]
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                                    .animateContentSize(),
+                                onClick = {
+                                    expandedStates = expandedStates.toMutableList().apply {
+                                        this[index] = !this[index]
                                     }
                                 }
-                                if (expandedStates[index]) {
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(text = announcement.content, style = MaterialTheme.typography.bodyMedium)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Column {
+                                            Text(text = announcement.title, style = MaterialTheme.typography.titleLarge)
+                                            Text(text = "By ${announcement.tutor.firstName} ${announcement.tutor.lastName}", style = MaterialTheme.typography.bodySmall)
+                                        }
+                                        Column {
+                                            Text(text = announcement.datetime.substring(0, 16), style = MaterialTheme.typography.bodySmall)
+                                        }
+                                    }
+                                    if (expandedStates[index]) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(text = announcement.content, style = MaterialTheme.typography.bodyMedium)
+                                    }
                                 }
                             }
                         }
@@ -152,4 +158,5 @@ class AnnouncementsActivity : ComponentActivity() {
             }
         }
     }
+
 }

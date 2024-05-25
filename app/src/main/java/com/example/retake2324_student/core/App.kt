@@ -1,5 +1,6 @@
 package com.example.retake2324_student.core
 
+import NotificationHelper
 import android.app.Application
 import com.example.retake2324_student.connectDatabase
 import com.example.retake2324_student.data.Component
@@ -22,6 +23,11 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize notification channels here
+        val notificationHelper = NotificationHelper(this)
+        notificationHelper.createNotificationChannel()
+
         // Initialize the database connection lazily
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -29,10 +35,6 @@ class App : Application() {
                 _databaseDeferred.complete(database)
             } catch (e: Exception) {
                 displayException(e)
-                // NB:commented out as we don't want to propagate the exception
-                // we're catching it in a centralized way through the `exceptionFlow`
-                // the centralized handler is in the `MainActivity`
-                //_databaseDeferred.completeExceptionally(e)
             }
         }
     }
@@ -41,11 +43,10 @@ class App : Application() {
         return _databaseDeferred.await()
     }
 
-    // NB: this method doesn't directly show the exception but registers it to the `exceptionFlow`
-    // it's then `BaseActivity` that has the code to display it to the user
-    // each Activity can override how exceptions are routed and displayed
+
     fun displayException(exception: Exception) {
         _exceptionFlow.value = exception
         exception.printStackTrace()
     }
+
 }

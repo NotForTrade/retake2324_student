@@ -168,19 +168,19 @@ class PersonalOverviewActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            PersonalOverviewScreen(student, components)
+            PersonalOverviewScreen(app, student, components)
         }
     }
 
     @Composable
-    fun PersonalOverviewScreen(student: User, components: List<Component>) {
+    fun PersonalOverviewScreen(app: App, student: User, components: List<Component>) {
         val context = LocalContext.current
         val expandedComponents = remember { mutableStateOf(components.map { it.id }.toSet()) }
 
         val columnWidths = listOf(200.dp) + listOf(100.dp)
 
         Scaffold(
-            topBar = { Header("Personal Overview") },
+            topBar = { Header("Personal Overview", app) },
             bottomBar = { Footer(student.id) }
         ) { innerPadding ->
             Box(

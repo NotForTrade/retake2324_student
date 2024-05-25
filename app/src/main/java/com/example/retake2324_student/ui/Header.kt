@@ -1,6 +1,9 @@
 package com.example.retake2324_student.ui
 
+import android.os.Bundle
+import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,6 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,13 +32,74 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.retake2324_student.core.App
+import com.example.retake2324_student.data.Announcement
+import com.example.retake2324_student.data.Schemas
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.ktorm.database.Database
+import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.toList
+
+
+private suspend fun fetchObjects(database: Database): List<Announcement> {
+    try {
+        // Fetch the announcements
+        val announcements = withContext(Dispatchers.IO) {
+            database.sequenceOf(Schemas.Announcements).toList()
+        }
+        return announcements
+    } catch (e: Exception) {
+        Log.e("SQL FETCHING ERROR", e.toString())
+        return listOf()
+    }
+}
+
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
-fun Header(activityName: String) {
+fun Header(activityName: String, app: App) {
+
     val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("AnnouncementsPrefs", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+
+    // MutableState to hold the lists
+    var announcements by remember { mutableStateOf(listOf<Announcement>()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+
+    LaunchedEffect(Unit) {
+        // Fetch announcements from the database
+        val database = app.getDatabase() // Reuse the existing database connection
+        val fetchedAnnouncements = fetchObjects(database)
+    }
+
+    if (isLoading != null) {
+
+
+
+
+
+    }
+
+    // Initialize unread count
+    var unreadCount by remember { mutableStateOf(0) }
+
+    // Store announcements in SharedPreferences and count unread ones
+    announcements.forEach { announcement ->
+        if (!sharedPreferences.contains(announcement)) {
+            editor.putBoolean(announcement, false)
+        }
+        if (!sharedPreferences.getBoolean(announcement, true)) {
+            unreadCount++
+        }
+    }
+    editor.apply()
+
 
     TopAppBar(
         title = {

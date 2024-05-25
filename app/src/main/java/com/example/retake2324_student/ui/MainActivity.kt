@@ -2,9 +2,11 @@ package com.example.retake2324_student.ui
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.retake2324_student.R
+import com.example.retake2324_student.core.App
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +30,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish() // Close MainActivity
 
+        setContent {
+            App()
+        }
+
     }
 
     private fun checkLoginStatus(): Boolean {
@@ -35,5 +41,8 @@ class MainActivity : AppCompatActivity() {
         // For example, checking SharedPreferences or a database
         return false // Default to false for this example
     }
+
+
+
 
 }
