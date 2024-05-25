@@ -54,7 +54,9 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
 
     implementation("org.ktorm:ktorm-core:4.0.0")
+    implementation("org.ktorm:ktorm-support-mysql:4.0.0")
     implementation("mysql:mysql-connector-java:5.1.49")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     implementation("androidx.compose.ui:ui:1.6.7")
@@ -66,6 +68,7 @@ dependencies {
 
     implementation("androidx.compose.ui:ui-tooling:1.6.7")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
+
 
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.runtime.livedata)

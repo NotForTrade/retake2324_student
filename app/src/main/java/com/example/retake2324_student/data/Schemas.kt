@@ -1,8 +1,19 @@
 package com.example.retake2324_student.data
 
+import com.example.retake2324_student.data.Schemas.Reassessments.bindTo
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
+import java.sql.CallableStatement
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Timestamp
+import java.sql.Types
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+
+
+
+
 
 
 interface Announcement : Entity<Announcement> {
@@ -11,7 +22,7 @@ interface Announcement : Entity<Announcement> {
     var tutor: User
     var title: String
     var content: String
-    var datetime: LocalDateTime
+    var datetime: String
 }
 
 interface AttendanceState : Entity<AttendanceState> {
@@ -108,7 +119,7 @@ interface Reassessment: Entity<Reassessment> {
     var skill: Skill
     var score: Score
     var document: String
-    var datetime: LocalDateTime
+    var datetime: String
     var treated: Boolean
 }
 
@@ -119,7 +130,7 @@ object Schemas {
         val TutorId = int("tutor_id").references(Users) { it.tutor }
         val Title = varchar("title").bindTo { it.title }
         val Content = varchar("content").bindTo { it.content }
-        val DateTime = datetime("datetime").bindTo { it.datetime }
+        val Datetime = varchar("datetime").bindTo { it.datetime }
     }
 
     object AttendanceStates : Table<AttendanceState>("attendance_status") {
@@ -193,7 +204,7 @@ object Schemas {
         val SkillId = int("skill_id").references(Skills) { it.skill }
         val ScoreId = int("score_id").references(Scores) { it.score }
         val Document = varchar("document").bindTo { it.document }
-        val Datetime = datetime("datetime").bindTo { it.datetime }
+        val datetime = varchar("datetime").bindTo { it.datetime }
         val Treated = boolean("treated").bindTo { it.treated }
     }
 
