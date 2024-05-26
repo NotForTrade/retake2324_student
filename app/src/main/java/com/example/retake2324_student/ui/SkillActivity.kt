@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,62 +116,69 @@ class SkillActivity: ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            SkillScreen(skill, score, studentId)
+            SkillScreen(app, skill, score, studentId)
         }
     }
 
     @Composable
-    fun SkillScreen(skill: Skill, score: Score, studentId: Int) {
+    fun SkillScreen(app: App, skill: Skill, score: Score, studentId: Int) {
         val context = LocalContext.current
 
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize()
-        ) {
-            Text(
-                text = "Component: ${skill.component.name}",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "Name: ${skill.name}",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "Coefficient: ${skill.coefficient}",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "Description: ${skill.description}",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+        Scaffold(
+            topBar = { Header("Skill", app) },
+            bottomBar = { Footer(studentId) }
+        ) { innerPadding ->
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = if (score.value != 0.0) "Score: ${score.value}" else "Not evaluated",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Button(
-
-                onClick = {
-                    // Start RequestReassessmentActivity and pass the scoreId
-                    val intent = Intent(context, RequestReassessmentActivity::class.java)
-                    intent.putExtra("skillId", skill.id)
-                    intent.putExtra("scoreId", score.id)
-                    intent.putExtra("studentId", studentId)
-
-                    context.startActivity(intent)
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
             ) {
-                Text(text = "Request Reassessment")
+                Text(
+                    text = "Component: ${skill.component.name}",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Name: ${skill.name}",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Coefficient: ${skill.coefficient}",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Description: ${skill.description}",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = if (score.value != 0.0) "Score: ${score.value}" else "Not evaluated",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Button(
+
+                    onClick = {
+                        // Start RequestReassessmentActivity and pass the scoreId
+                        val intent = Intent(context, RequestReassessmentActivity::class.java)
+                        intent.putExtra("skillId", skill.id)
+                        intent.putExtra("scoreId", score.id)
+                        intent.putExtra("studentId", studentId)
+
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = "Request Reassessment")
+                }
             }
         }
     }

@@ -161,17 +161,17 @@ class PersonalSynthesisActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            PersonalSynthesisScreen(student, components)
+            PersonalSynthesisScreen(app, student, components)
         }
     }
 
     @Composable
-    fun PersonalSynthesisScreen(student: User, components: List<Component>) {
+    fun PersonalSynthesisScreen(app: App, student: User, components: List<Component>) {
         val context = LocalContext.current
         val columnWidths = listOf(200.dp) + listOf(100.dp)
 
         Scaffold(
-            topBar = { Header("Personal Synthesis") },
+            topBar = { Header("Personal Synthesis", app) },
             bottomBar = { Footer(student.id) }
         ) { innerPadding ->
             Box(

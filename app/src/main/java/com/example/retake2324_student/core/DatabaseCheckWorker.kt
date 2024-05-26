@@ -1,11 +1,10 @@
 package com.example.retake2324_student.core
 
-import NotificationHelper
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
-
+/*
 class DatabaseCheckWorker(
     context: Context,
     workerParams: WorkerParameters
@@ -32,3 +31,5 @@ class DatabaseCheckWorker(
         return true
     }
 }
+
+ */

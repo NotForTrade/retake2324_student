@@ -10,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,8 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.retake2324_student.core.App
+import com.example.retake2324_student.data.Announcement
 import com.example.retake2324_student.data.Component
+import com.example.retake2324_student.data.Reassessment
 import com.example.retake2324_student.data.Schemas
 import com.example.retake2324_student.data.Skill
 import kotlinx.coroutines.CoroutineScope
@@ -65,10 +70,12 @@ class RequestReassessmentActivity : ComponentActivity() {
         database: Database,
         studentId: Int,
         skillId: Int
-    ): Pair<List<Component>, Skill?> {
+    ): Triple<List<Reassessment>, List<Component>, Skill?> {
 
         try {
-            // Fetch the skill
+            val requests = withContext(Dispatchers.IO) {
+                database.sequenceOf(Schemas.Reassessments).filter { it.StudentId eq studentId }.toList()
+            }
             val components = withContext(Dispatchers.IO) {
                 database.sequenceOf(Schemas.Components).toList()
             }
@@ -98,14 +105,14 @@ class RequestReassessmentActivity : ComponentActivity() {
                     skill.component.skills = skills.filter { it.component.id == skill.component.id }
                 }
 
-                return Pair(components, skill)
+                return Triple(requests, components, skill)
             } else {
                 Log.e("SQL FETCHING ERROR", "NO COMPONENT FOUND")
-                return Pair(listOf(), Skill())
+                return Triple(listOf(), listOf(), Skill())
             }
         } catch (e: Exception) {
             Log.e("SQL FETCHING ERROR", e.toString())
-            return Pair(listOf(), Skill())
+            return Triple(listOf(), listOf(), Skill())
         }
     }
 
@@ -113,15 +120,17 @@ class RequestReassessmentActivity : ComponentActivity() {
     @Composable
     fun RequestReassessmentLoader(app: App, skillId: Int, scoreId: Int, studentId: Int) {
         // MutableState to hold values
+        var requests by remember { mutableStateOf(listOf<Reassessment>()) }
         var components by remember { mutableStateOf(listOf<Component>()) }
         var skill by remember { mutableStateOf<Skill?>(null) }
         var isLoading by remember { mutableStateOf(true) }
 
         LaunchedEffect(Unit) {
             val database = app.getDatabase() // Reuse the existing database connection
-            val (fetchedComponents, fetchedSkill) = fetchObjects(database, studentId, skillId)
+            val (fetchedRequests, fetchedComponents, fetchedSkill) = fetchObjects(database, studentId, skillId)
 
             // Update the states
+            requests = fetchedRequests
             components = fetchedComponents
             skill = fetchedSkill
             isLoading = false
@@ -130,19 +139,13 @@ class RequestReassessmentActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            RequestReassessmentScreen(app, components, skill, studentId, scoreId)
+            RequestReassessmentScreen(app, requests, components, skill, studentId, scoreId)
         }
     }
 
 
     @Composable
-    fun RequestReassessmentScreen(
-        app: App,
-        components: List<Component>,
-        skill: Skill?,
-        studentId: Int,
-        scoreId: Int
-    ) {
+    fun RequestReassessmentScreen(app: App, requests: List<Reassessment>, components: List<Component>, skill: Skill?, studentId: Int, scoreId: Int) {
         val context = LocalContext.current
 
         var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
@@ -150,6 +153,9 @@ class RequestReassessmentActivity : ComponentActivity() {
 
         var showDialog by remember { mutableStateOf(false) }
         var dialogMessage by remember { mutableStateOf("") }
+
+        var showRequests by remember { mutableStateOf(mutableListOf<Reassessment>()) }
+        showRequests.addAll(requests)
 
         val filePickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
@@ -161,7 +167,6 @@ class RequestReassessmentActivity : ComponentActivity() {
                 inputStream?.use { stream ->
                     val bytes = stream.readBytes()
                     selectedFileBase64 = Base64.encodeToString(bytes, Base64.DEFAULT)
-                    Log.d("BASE64", "File converted to Base64: $selectedFileBase64")
                 }
             }
         }
@@ -174,143 +179,192 @@ class RequestReassessmentActivity : ComponentActivity() {
         var selectedSkill by remember { mutableStateOf(skill) }
         var skillsBoxExpanded by remember { mutableStateOf(false) }
 
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
 
-            // Components' DropDownBox
-            Box(
+        Scaffold(
+            topBar = { Header("Request Reassessment", app) },
+            bottomBar = { Footer(studentId) }
+        ) { innerPadding ->
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { componentsBoxExpanded = !componentsBoxExpanded }
-                    .border(1.dp, Color.Gray)
+                    .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                Text(text = selectedComponent?.name ?: "Select a Component")
-            }
-            DropdownMenu(
-                expanded = componentsBoxExpanded,
-                onDismissRequest = { componentsBoxExpanded = false }
-            ) {
-                components.forEach { component ->
-                    DropdownMenuItem(
-                        { Text(text = component.name) },
-                        onClick = {
-                            selectedComponent = component
-                            componentsBoxExpanded = false
-                            selectedSkill = null
-                            selectedFileUri = null
-                            selectedFileBase64 = null
-                            Log.d(
-                                "SELECT CHECK",
-                                "Selected Component: ${component.name}"
-                            ) // Debug log
 
+                // Components' DropDownBox
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { componentsBoxExpanded = !componentsBoxExpanded }
+                        .border(1.dp, Color.Gray)
+                        .padding(16.dp)
+                ) {
+                    Text(text = selectedComponent?.name ?: "Select a Component")
+
+                    DropdownMenu(
+                        expanded = componentsBoxExpanded,
+                        onDismissRequest = { componentsBoxExpanded = false },
+                    ) {
+                        components.forEach { component ->
+                            DropdownMenuItem(
+                                { Text(text = component.name) },
+                                onClick = {
+                                    selectedComponent = component
+                                    componentsBoxExpanded = false
+                                    selectedSkill = null
+                                    selectedFileUri = null
+                                    selectedFileBase64 = null
+                                }
+                            )
                         }
-                    )
+                    }
                 }
-            }
-
-            // Skill's DropDownBox
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(selectedComponent != null) { skillsBoxExpanded = !skillsBoxExpanded }
-                    .border(1.dp, if (selectedComponent != null) Color.Gray else Color.LightGray)
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = selectedSkill?.name
-                        ?: if (selectedComponent == null) "Select a Component first" else "Select a Skill"
-                )
-            }
-
-            DropdownMenu(
-                expanded = skillsBoxExpanded,
-                onDismissRequest = { skillsBoxExpanded = false }
-            ) {
-                selectedComponent?.skills?.forEach { skill ->
-                    DropdownMenuItem(
-                        { Text(text = skill.name) },
-                        onClick = {
-                            selectedSkill = skill
-                            skillsBoxExpanded = false
-                            selectedFileUri = null
-                            selectedFileBase64 = null
+                // Skill's DropDownBox
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(selectedComponent != null) {
+                            skillsBoxExpanded = !skillsBoxExpanded
                         }
+                        .border(
+                            1.dp,
+                            if (selectedComponent != null) Color.Gray else Color.LightGray
+                        )
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = selectedSkill?.name
+                            ?: if (selectedComponent == null) "Select a Component first" else "Select a Skill"
                     )
+
+                    DropdownMenu(
+                        expanded = skillsBoxExpanded,
+                        onDismissRequest = { skillsBoxExpanded = false }
+                    ) {
+                        selectedComponent?.skills?.forEach { skill ->
+                            DropdownMenuItem(
+                                { Text(text = skill.name) },
+                                onClick = {
+                                    selectedSkill = skill
+                                    skillsBoxExpanded = false
+                                    selectedFileUri = null
+                                    selectedFileBase64 = null
+                                }
+                            )
+                        }
+                    }
                 }
-            }
 
-            // Upload File Button
-            Button(
-                onClick = { filePickerLauncher.launch("*/*") },
-                enabled = selectedComponent != null && selectedSkill != null,
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text("Upload File")
-            }
+                // Upload File Button
+                Button(
+                    onClick = { filePickerLauncher.launch("*/*") },
+                    enabled = selectedComponent != null && selectedSkill != null,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Upload File")
+                }
 
-            // Display selected file URI
-            selectedFileUri?.let {
-                Text(text = "Selected File: ${it.path}", modifier = Modifier.padding(top = 8.dp))
-            }
+                // Display selected file URI
+                selectedFileUri?.let {
+                    Text(text = "Selected File: ${it.path}", modifier = Modifier.padding(top = 8.dp))
+                }
 
-            // Submit Button
-            Button(
-                onClick = {
-                    // Handle submit action here
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
+                // Submit Button
+                Button(
+                    onClick = {
+                        // Handle submit action here
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
 
-                            val database = app.getDatabase()
-                            database.insert(Schemas.Reassessments) {
-                                set(it.StudentId, studentId)
-                                set(it.SkillId, selectedSkill!!.id)
-                                set(it.ScoreId, if (scoreId > 0) scoreId else null)
-                                set(it.Document, selectedFileBase64!!)
-                                set(it.Treated, false)
+                                val database = app.getDatabase()
+                                database.insert(Schemas.Reassessments) {
+                                    set(it.StudentId, studentId)
+                                    set(it.SkillId, selectedSkill!!.id)
+                                    set(it.ScoreId, if (scoreId > 0) scoreId else null)
+                                    set(it.Document, selectedFileBase64!!)
+                                    set(it.Treated, false)
+                                }
+                                Log.d("SUBMIT", "File submitted with Base64: $selectedFileBase64")
+
+                                /*
+                                // Add a clone of the reassessmentRequest to showRequests
+                                showRequests.add(Reassessment{
+                                    id // unused
+                                    student // unused
+                                    this.skill = selectedSkill!!
+                                    score // unused
+                                    document // unused
+                                    treated // unused
+                                })
+                                */
+
+                                // Reinitialize the selectors
+                                selectedComponent = null
+                                selectedSkill = null
+                                selectedFileUri = null
+                                selectedFileBase64 = null
+
+                                // Show success dialog
+                                dialogMessage = "Request submitted successfully"
+                                showDialog = true
+
+                            } catch (e: Exception) {
+                                Log.e("SUBMIT", "Error submitting file: ${e.message}")
+                                dialogMessage = "An error occurred: ${e.message}"
+                                showDialog = true
+
                             }
-                            Log.d("SUBMIT", "File submitted with Base64: $selectedFileBase64")
+                        }
+                    },
+                    enabled = selectedFileUri != null,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Submit")
+                }
 
-                            // Reinitialize the selectors
-                            selectedComponent = null
-                            selectedSkill = null
-                            selectedFileUri = null
-                            selectedFileBase64 = null
+                // Show Dialog if needed
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        title = { Text("Submission Status") },
+                        text = { Text(dialogMessage) },
+                        confirmButton = {
+                            Button(
+                                onClick = { showDialog = false }
+                            ) {
+                                Text("Ok")
+                            }
+                        }
+                    )
+                }
 
-                            // Show success dialog
-                            dialogMessage = "Request submitted successfully"
-                            showDialog = true
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(Color.LightGray)
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "My Pending Requests",
+                            fontSize = 20.sp,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        requests.forEach { request ->
 
-                        } catch (e: Exception) {
-                            Log.e("SUBMIT", "Error submitting file: ${e.message}")
-                            dialogMessage = "An error occurred: ${e.message}"
-                            showDialog = true
-
+                            Text(
+                                text = "${request.skill.name}: ${request.datetime.substring(0, 16)}",
+                                fontSize = 16.sp,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
                         }
                     }
-                },
-                enabled = selectedFileUri != null,
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text("Submit")
-            }
+                }
 
-            // Show Dialog if needed
-            if (showDialog) {
-                AlertDialog(
-                    onDismissRequest = { showDialog = false },
-                    title = { Text("Submission Status") },
-                    text = { Text(dialogMessage) },
-                    confirmButton = {
-                        Button(
-                            onClick = { showDialog = false }
-                        ) {
-                            Text("Ok")
-                        }
-                    }
-                )
+
             }
         }
     }

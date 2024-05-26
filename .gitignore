@@ -9,7 +9,7 @@ local.properties
 wrapper/
 native/
 daemon/
-
+kotlin-profile
 
 # Cache
 .cache
@@ -36,6 +36,7 @@ caches/
 .externalNativeBuild/
 
 # Other
+*.profile
 *.TAG
 *.jar
 *.iml

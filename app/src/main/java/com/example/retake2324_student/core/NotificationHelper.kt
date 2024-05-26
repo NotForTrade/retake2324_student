@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.retake2324_student.R
 import com.example.retake2324_student.ui.MainActivity
 
+/*
 
 class NotificationHelper(private val context: Context) {
     companion object {
@@ -60,3 +61,5 @@ class NotificationHelper(private val context: Context) {
         }
     }
 }
+
+*/

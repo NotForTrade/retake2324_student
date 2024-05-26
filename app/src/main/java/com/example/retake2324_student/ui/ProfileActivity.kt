@@ -97,17 +97,17 @@ class ProfileActivity : ComponentActivity() {
         if (isLoading) {
             Text(text = "Loading...", modifier = Modifier.padding(16.dp))
         } else {
-            ProfileScreen(profile, studentId)
+            ProfileScreen(app, profile, studentId)
         }
     }
 
     @Composable
-    fun ProfileScreen(profile: User, studentId: Int) {
+    fun ProfileScreen(app: App, profile: User, studentId: Int) {
         val context = LocalContext.current
         val columnWidths = listOf(200.dp) + listOf(100.dp)
 
         Scaffold(
-            topBar = { Header("Personal Synthesis") },
+            topBar = { Header("Profile", app) },
             bottomBar = { Footer(studentId) }
         ) { innerPadding ->
             Box(

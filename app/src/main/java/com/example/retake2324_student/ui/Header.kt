@@ -64,42 +64,6 @@ private suspend fun fetchObjects(database: Database): List<Announcement> {
 fun Header(activityName: String, app: App) {
 
     val context = LocalContext.current
-    val sharedPreferences = context.getSharedPreferences("AnnouncementsPrefs", Context.MODE_PRIVATE)
-    val editor = sharedPreferences.edit()
-
-    // MutableState to hold the lists
-    var announcements by remember { mutableStateOf(listOf<Announcement>()) }
-    var isLoading by remember { mutableStateOf(true) }
-
-
-    LaunchedEffect(Unit) {
-        // Fetch announcements from the database
-        val database = app.getDatabase() // Reuse the existing database connection
-        val fetchedAnnouncements = fetchObjects(database)
-    }
-
-    if (isLoading != null) {
-
-
-
-
-
-    }
-
-    // Initialize unread count
-    var unreadCount by remember { mutableStateOf(0) }
-
-    // Store announcements in SharedPreferences and count unread ones
-    announcements.forEach { announcement ->
-        if (!sharedPreferences.contains(announcement)) {
-            editor.putBoolean(announcement, false)
-        }
-        if (!sharedPreferences.getBoolean(announcement, true)) {
-            unreadCount++
-        }
-    }
-    editor.apply()
-
 
     TopAppBar(
         title = {
@@ -145,12 +109,4 @@ fun Header(activityName: String, app: App) {
         ),
         modifier = Modifier.height(80.dp)
     )
-}
-
-@Preview
-@Composable
-fun PreviewAppHeader() {
-    MaterialTheme {
-        Header(activityName = "Home")
-    }
 }

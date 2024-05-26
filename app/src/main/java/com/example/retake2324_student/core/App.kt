@@ -1,6 +1,5 @@
 package com.example.retake2324_student.core
 
-import NotificationHelper
 import android.app.Application
 import com.example.retake2324_student.connectDatabase
 import com.example.retake2324_student.data.Component
@@ -25,8 +24,8 @@ class App : Application() {
         super.onCreate()
 
         // Initialize notification channels here
-        val notificationHelper = NotificationHelper(this)
-        notificationHelper.createNotificationChannel()
+        //val notificationHelper = NotificationHelper(this)
+        //notificationHelper.createNotificationChannel()
 
         // Initialize the database connection lazily
         CoroutineScope(Dispatchers.IO).launch {
