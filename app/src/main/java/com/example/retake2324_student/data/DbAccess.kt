@@ -1,4 +1,4 @@
-package com.example.retake2324_student
+package com.example.retake2324_student.data
 
 
 import org.ktorm.database.Database

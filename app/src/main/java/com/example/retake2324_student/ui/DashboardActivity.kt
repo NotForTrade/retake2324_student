@@ -51,6 +51,20 @@ class DashboardActivity : ComponentActivity() {
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // View Announcements Button
+                    Button(
+                        onClick = {
+                            val intent = Intent(this@DashboardActivity, AnnouncementsActivity::class.java)
+                            intent.putExtra("studentId", studentId)
+                            startActivity(intent)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("View Announcements")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     // Frame for personal and group buttons
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.weight(1f)) {
