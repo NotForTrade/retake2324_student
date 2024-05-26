@@ -364,7 +364,6 @@ class RequestReassessmentActivity : ComponentActivity() {
                     }
                 }
 
-
             }
         }
     }

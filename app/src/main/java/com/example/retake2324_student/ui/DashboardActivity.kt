@@ -25,7 +25,6 @@ import com.example.retake2324_student.core.App
 
 class DashboardActivity : ComponentActivity() {
 
-    private val studentId = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +32,13 @@ class DashboardActivity : ComponentActivity() {
         val app = application as App
 
         setContent {
-            DashboardScreen(app)
+            val studentId = intent.getIntExtra("studentId", -1)
+            DashboardScreen(app, studentId)
         }
     }
 
     @Composable
-    fun DashboardScreen(app: App) {
+    fun DashboardScreen(app: App, studentId: Int) {
         Scaffold(
             topBar = { Header("Dashboard", app) },
             bottomBar = { Footer(studentId) }

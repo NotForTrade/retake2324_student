@@ -1,46 +1,90 @@
 package com.example.retake2324_student.ui
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.example.retake2324_student.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
-class LoginActivity : AppCompatActivity() {
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-    lateinit var usernameInput: EditText
-    lateinit var passwordInput: EditText
-    lateinit var loginButton: Button
-
+class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContent {
+            LoginScreen()
+        }
+    }
 
-        usernameInput = findViewById(R.id.username_input)
-        passwordInput = findViewById(R.id.password_input)
-        loginButton = findViewById(R.id.login_button)
+    @Composable
+    fun LoginScreen() {
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
 
-        loginButton.setOnClickListener {
-            val username = usernameInput.text.toString()
-            val password = passwordInput.text.toString()
-            Log.i("Test credentials", "Username: $username and Password: $password")
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Login", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
 
-            if (validateCredentials(username, password)) {
-                // On successful login, return to MainActivity
-                setResult(RESULT_OK)
-                finish()
-            } else {
-                // Show error message
-                Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show()
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Button(
+                onClick = { /* Handle login logic here */ },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            ) {
+                Text("Login")
+            }
+
+            TextButton(
+                onClick = {
+                    val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                    startActivity(intent)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Signup")
             }
         }
     }
 
-    private fun validateCredentials(username: String, password: String): Boolean {
-        // Replace with actual validation logic
-        // For example, checking against hardcoded credentials or a database
-        return username == "admin" && password == "password"
+    @Preview(showBackground = true)
+    @Composable
+    fun LoginScreenPreview() {
+        LoginScreen()
     }
 }

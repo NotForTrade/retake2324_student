@@ -15,18 +15,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        /*
-        // Check if user is logged in
-        val isLoggedIn = checkLoginStatus()
 
-        if (!isLoggedIn) {
-            // Redirect to LoginActivity
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish() // Close MainActivity
-        }
-*/
-        val intent = Intent(this, DashboardActivity::class.java)
+        // Check if user is logged in
+        // val isLoggedIn = checkLoginStatus()
+
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish() // Close MainActivity
 

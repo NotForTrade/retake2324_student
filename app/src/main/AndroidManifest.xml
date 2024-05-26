@@ -23,7 +23,7 @@
             android:name=".ui.PersonalOverviewActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.SignUpActivity"
+            android:name=".ui.SignupActivity"
             android:exported="false" />
         <activity
             android:name=".ui.AnnouncementsActivity"
