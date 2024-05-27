@@ -96,7 +96,7 @@ class LoginActivity : ComponentActivity() {
                         val database = app.getDatabase()
 
                         // email is a unique key and used as "username"
-                        student = database.sequenceOf(Schemas.Users).find { it.Mail eq email }
+                        student = database.sequenceOf(Schemas.Users).find { it.email eq email }
                     }
 
 

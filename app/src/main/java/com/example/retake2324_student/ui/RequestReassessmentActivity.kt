@@ -74,7 +74,7 @@ class RequestReassessmentActivity : ComponentActivity() {
 
         try {
             val requests = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Reassessments).filter { it.StudentId eq studentId }.toList()
+                database.sequenceOf(Schemas.Reassessments).filter { it.studentId eq studentId }.toList()
             }
             val components = withContext(Dispatchers.IO) {
                 database.sequenceOf(Schemas.Components).toList()
@@ -83,7 +83,7 @@ class RequestReassessmentActivity : ComponentActivity() {
                 database.sequenceOf(Schemas.Skills).toList()
             }
             val scores = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Scores).filter { it.StudentId eq studentId }.toList()
+                database.sequenceOf(Schemas.Scores).filter { it.studentId eq studentId }.toList()
             }
 
 
@@ -278,11 +278,11 @@ class RequestReassessmentActivity : ComponentActivity() {
 
                                 val database = app.getDatabase()
                                 database.insert(Schemas.Reassessments) {
-                                    set(it.StudentId, studentId)
-                                    set(it.SkillId, selectedSkill!!.id)
-                                    set(it.ScoreId, if (scoreId > 0) scoreId else null)
-                                    set(it.Document, selectedFileBase64!!)
-                                    set(it.Treated, false)
+                                    set(it.studentId, studentId)
+                                    set(it.skillId, selectedSkill!!.id)
+                                    set(it.scoreId, if (scoreId > 0) scoreId else null)
+                                    set(it.document, selectedFileBase64!!)
+                                    set(it.treated, false)
                                 }
                                 Log.d("SUBMIT", "File submitted with Base64: $selectedFileBase64")
 

@@ -77,7 +77,7 @@ class SignupActivity : ComponentActivity() {
 
 
             val role = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Roles).find { it.Name eq "Student" }
+                database.sequenceOf(Schemas.Roles).find { it.name eq "Student" }
             }
             return role ?: Role()
         }catch (e: Exception) {
@@ -147,15 +147,15 @@ class SignupActivity : ComponentActivity() {
                     withContext(Dispatchers.IO) {
                         val database = app.getDatabase()
                         database.insert(Schemas.Users) {
-                            set(it.RoleId, student_roleId)
-                            set(it.GroupId, null)
-                            set(it.ModuleId, 1) // only 1 module
-                            set(it.ComponentId, null) // only column used for tutors only
-                            set(it.Photo, selectedFileBase64)
-                            set(it.FirstName, firstname)
-                            set(it.LastName, lastname)
-                            set(it.Mail, email)
-                            set(it.Password, hashedPassword)
+                            set(it.roleId, student_roleId)
+                            set(it.groupId, null)
+                            set(it.moduleId, 1) // only 1 module
+                            set(it.componentId, null) // only column used for tutors only
+                            set(it.photo, selectedFileBase64)
+                            set(it.firstName, firstname)
+                            set(it.lastName, lastname)
+                            set(it.email, email)
+                            set(it.password, hashedPassword)
                         }
                     }
 

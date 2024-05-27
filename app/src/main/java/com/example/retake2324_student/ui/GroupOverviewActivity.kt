@@ -71,14 +71,14 @@ class GroupOverviewActivity : ComponentActivity() {
 
             // Fetch all the students from the user's group
             val student = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).find { it.Id eq studentId }
+                database.sequenceOf(Schemas.Users).find { it.id eq studentId }
             }
 
             if (student != null) {
 
                 // Fetch the students from the same group
                 val students = withContext(Dispatchers.IO) {
-                    database.sequenceOf(Schemas.Users).filter { it.GroupId eq student.group.id }
+                    database.sequenceOf(Schemas.Users).filter { it.groupId eq student.group.id }
                         .toList()
                 }
 

@@ -65,12 +65,12 @@ class GroupSynthesisActivity : ComponentActivity() {
 
             // Fetch all the students from the user's group
             val student = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).find { it.Id eq studentId }
+                database.sequenceOf(Schemas.Users).find { it.id eq studentId }
             }
 
             // Fetch all the students from the user's group
             val students = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).filter { it.GroupId eq student!!.group.id }.toList()
+                database.sequenceOf(Schemas.Users).filter { it.groupId eq student!!.group.id }.toList()
             }
 
             // Fetch components data

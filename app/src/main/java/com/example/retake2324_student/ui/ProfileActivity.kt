@@ -70,7 +70,7 @@ class ProfileActivity : ComponentActivity() {
         try {
             // Fetch the profile
             val profile = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).find { it.Id eq profileId }
+                database.sequenceOf(Schemas.Users).find { it.id eq profileId }
             }
             if (profile != null) {
                 return profile

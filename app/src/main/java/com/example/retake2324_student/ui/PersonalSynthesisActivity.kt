@@ -67,7 +67,7 @@ class PersonalSynthesisActivity : ComponentActivity() {
 
             // Fetch all the students from the user's group
             val student = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).find { it.Id eq studentId }
+                database.sequenceOf(Schemas.Users).find { it.id eq studentId }
             }
 
             if (student != null) {
