@@ -121,6 +121,7 @@ class LoginActivity : ComponentActivity() {
                 val intent = Intent(context, DashboardActivity::class.java)
                 intent.putExtra("studentId", studentId)
                 startActivity(intent)
+                finish()
             }
 
         }

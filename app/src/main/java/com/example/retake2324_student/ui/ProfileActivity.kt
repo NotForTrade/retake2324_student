@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -141,29 +142,49 @@ class ProfileActivity : ComponentActivity() {
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .padding(end = 16.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                Text(text = "Role: ${profile.role.name}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(
-                    text = if (profile.role.name == "Student") "Group: ${profile.group.name}" else "Component: ${profile.component.name}",
-                    fontSize = 16.sp
-                )
-                Text(text = "Name: ${profile.firstName + " " + profile.lastName}", fontSize = 16.sp)
-                Text(text = "Email: ${profile.email}", fontSize = 16.sp, modifier = Modifier.clickable{})
-            }
-                if (image != null) {
-                    Image(
-                        bitmap = image,
-                        contentDescription = "${profile.photo}'s photo",
+                    Column(
                         modifier = Modifier
-                            .size(100.dp)
-                            .padding(16.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Text(text = "No photo found!")
+                            .weight(1f)
+                            .padding(end = 16.dp)
+                    ) {
+                        Text(
+                            text = "Role: ${profile.role.name}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = if (profile.role.name == "Student") "Group: ${profile.group.name}" else "Component: ${profile.component.name}",
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "Name: ${profile.firstName} ${profile.lastName}",
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "Email: ${profile.email}",
+                            fontSize = 16.sp,
+                            modifier = Modifier.clickable { }
+                        )
+                    }
+                    if (image != null) {
+                        Image(
+                            bitmap = image,
+                            contentDescription = "${profile.photo}'s photo",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(16.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Text(text = "No photo found!")
+                    }
                 }
 
             }

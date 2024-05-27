@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.retake2324_student.core.App
 
 @Composable
 fun Footer(studentId: Int) {
@@ -44,7 +45,15 @@ fun Footer(studentId: Int) {
                 icon = { Icon(imageVector = Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout") },
                 label = { Text("Logout") },
                 selected = false,
-                onClick = {}
+                onClick = {
+                    // Create an Intent to start the login activity
+                    val intent = Intent(context, LoginActivity::class.java).apply {
+                        // Clear any existing task and start a new one
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    // Start the login activity
+                    context.startActivity(intent)
+                }
             )
         },
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp)

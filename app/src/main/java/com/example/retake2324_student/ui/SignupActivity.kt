@@ -247,11 +247,11 @@ class SignupActivity : ComponentActivity() {
                 onClick = { filePickerLauncher.launch("*/*") },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text("Upload File")
+                Text("Upload Photo")
             }
 
             selectedFileUri?.let {
-                Text(text = "Selected File: ${it.path}", modifier = Modifier.padding(top = 8.dp))
+                Text(text = "Selected Photo: ${it.path}", modifier = Modifier.padding(top = 8.dp))
             }
 
             Button(
