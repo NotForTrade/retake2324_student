@@ -46,7 +46,8 @@ class LoginActivity : ComponentActivity() {
 
         val app = application as App
         setContent {
-            LoginScreen(app)
+            val signupEmail = intent.getStringExtra("email")
+            LoginScreen(app, signupEmail)
         }
     }
 
@@ -63,14 +64,16 @@ class LoginActivity : ComponentActivity() {
     }
 
     @Composable
-    fun LoginScreen(app: App) {
+    fun LoginScreen(app: App, signupEmail: String?) {
         val context = LocalContext.current
 
         var studentId by remember { mutableStateOf(-1) }
         var success by remember { mutableStateOf(false) }
 
-
         var email by remember { mutableStateOf("") }
+        if (signupEmail != null) {
+            email = signupEmail
+        }
         var password by remember { mutableStateOf("") }
 
         Column(

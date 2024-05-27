@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
@@ -111,18 +113,16 @@ class SignupActivity : ComponentActivity() {
     @Composable
     fun SignupScreen(app: App, student_roleId: Int) {
         val context = LocalContext.current
-
-        var student: User by remember { mutableStateOf(User()) }
-        var success by remember { mutableStateOf(false) }
+        val coroutineScope = rememberCoroutineScope()
 
         var firstname by remember { mutableStateOf("") }
         var lastname by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var password2 by remember { mutableStateOf("") }
-
         var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
         var selectedFileBase64 by remember { mutableStateOf<String?>(null) }
+        var isLoading by remember { mutableStateOf(false) }
 
         val filePickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent()
@@ -134,6 +134,51 @@ class SignupActivity : ComponentActivity() {
                 inputStream?.use { stream ->
                     val bytes = stream.readBytes()
                     selectedFileBase64 = Base64.encodeToString(bytes, Base64.DEFAULT)
+                }
+            }
+        }
+
+        LaunchedEffect(isLoading) {
+            if (isLoading) {
+                try {
+                    val hashedPassword = hashPassword(password)
+
+                    // Perform database operation on IO dispatcher
+                    withContext(Dispatchers.IO) {
+                        val database = app.getDatabase()
+                        database.insert(Schemas.Users) {
+                            set(it.RoleId, student_roleId)
+                            set(it.GroupId, null)
+                            set(it.ModuleId, 1) // only 1 module
+                            set(it.ComponentId, null) // only column used for tutors only
+                            set(it.Photo, selectedFileBase64)
+                            set(it.FirstName, firstname)
+                            set(it.LastName, lastname)
+                            set(it.Mail, email)
+                            set(it.Password, hashedPassword)
+                        }
+                    }
+
+                    // Navigate to LoginActivity on success
+                    val intent = Intent(context, LoginActivity::class.java).apply {
+                        putExtra("email", email)
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Log.e("SUBMIT", "Error submitting file: ${e.message}")
+
+                    // reset variables
+                    firstname = ""
+                    lastname = ""
+                    email = ""
+                    password = ""
+                    password2 = ""
+                    selectedFileUri = null
+                    selectedFileBase64 = null
+
+
+                } finally {
+                    isLoading = false
                 }
             }
         }
@@ -193,12 +238,11 @@ class SignupActivity : ComponentActivity() {
                     .padding(bottom = 16.dp),
                 visualTransformation = PasswordVisualTransformation()
             )
-            // If the 2 passwords are different, show a message
+
             if (password != password2) {
                 Text(text = "The 2 passwords don't match!", color = Color.Red)
             }
 
-            // Upload File Button
             Button(
                 onClick = { filePickerLauncher.launch("*/*") },
                 modifier = Modifier.padding(top = 16.dp)
@@ -206,66 +250,33 @@ class SignupActivity : ComponentActivity() {
                 Text("Upload File")
             }
 
-            // Display selected file URI
             selectedFileUri?.let {
                 Text(text = "Selected File: ${it.path}", modifier = Modifier.padding(top = 8.dp))
             }
 
             Button(
                 enabled = (
-                    (firstname != "")
-                    and (lastname != "")
-                    and (password != "")
-                    and (password2 != "")
-                    and (password == password2)
-                    and (selectedFileUri != null)
-                ),
+                        firstname.isNotEmpty() &&
+                                lastname.isNotEmpty() &&
+                                password.isNotEmpty() &&
+                                password2.isNotEmpty() &&
+                                password == password2 &&
+                                selectedFileUri != null
+                        ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 onClick = {
-
-                    // Handle submit action here
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-
-
-                            val hashedPassword = hashPassword(password)
-
-                            // Create a new User on the database
-                            val database = app.getDatabase()
-                            database.insert(Schemas.Users) {
-                                set(it.RoleId, student_roleId)
-                                set(it.GroupId, null)
-                                set(it.ModuleId, 1) // only 1 module
-                                set(it.ComponentId, null) // only column used for tutors only
-                                set(it.Photo, selectedFileBase64)
-                                set(it.FirstName, firstname)
-                                set(it.LastName, lastname)
-                                set(it.Mail, email)
-                                set(it.Password, hashedPassword)
-                            }
-
-                            // email is a unique key and used as "username"
-                            student = database.sequenceOf(Schemas.Users).find { it.Mail eq email } !!
-
-                            success = true
-
-                        } catch (e: Exception) {
-                            Log.e("SUBMIT", "Error submitting file: ${e.message}")
-
-                        }
-
-                    }
-                    if (success) {
-                        val intent = Intent(this@SignupActivity, DashboardActivity::class.java)
-                        intent.putExtra("studentId", student.id)
-                        startActivity(intent)
-                    }
-                })
-            {
+                    isLoading = true
+                }
+            ) {
                 Text("Submit")
+            }
+
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
             }
         }
     }
+
 }
