@@ -1,6 +1,8 @@
 package com.example.retake2324_student.ui
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -102,9 +107,29 @@ class ProfileActivity : ComponentActivity() {
     }
 
     @Composable
+    fun Base64Image(base64String: String): ImageBitmap? {
+
+        try {
+            // Decode Base64 string to byte array
+            val imageBytes = Base64.decode(base64String, Base64.DEFAULT)
+
+            // Convert byte array to Bitmap
+            val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+            // Convert Bitmap to ImageBitmap
+            return bitmap.asImageBitmap()
+        }catch(e: Exception) {
+            Log.e("Error decoding image",  "$e")
+            return null
+        }
+    }
+
+    @Composable
     fun ProfileScreen(app: App, profile: User, studentId: Int) {
         val context = LocalContext.current
         val columnWidths = listOf(200.dp) + listOf(100.dp)
+        
+        val image = Base64Image(base64String = profile.photo)
 
         Scaffold(
             topBar = { Header("Profile", app) },
@@ -128,14 +153,19 @@ class ProfileActivity : ComponentActivity() {
                 Text(text = "Name: ${profile.firstName + " " + profile.lastName}", fontSize = 16.sp)
                 Text(text = "Email: ${profile.email}", fontSize = 16.sp, modifier = Modifier.clickable{})
             }
-                /*Image(
-                    painter = rememberImagePainter(data = profile.photo),
-                    contentDescription = "${profile.firstName + " " + profile.lastName}'s photo",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(16.dp),
-                    contentScale = ContentScale.Crop
-                )*/
+                if (image != null) {
+                    Image(
+                        bitmap = image,
+                        contentDescription = "${profile.photo}'s photo",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(16.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(text = "No photo found!")
+                }
+
             }
         }
     }

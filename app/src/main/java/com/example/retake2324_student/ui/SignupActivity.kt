@@ -270,7 +270,7 @@ class SignupActivity : ComponentActivity() {
                     isLoading = true
                 }
             ) {
-                Text("Submit")
+                Text("Create account")
             }
 
             if (isLoading) {

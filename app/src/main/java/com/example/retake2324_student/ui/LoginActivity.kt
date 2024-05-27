@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
@@ -34,6 +37,7 @@ import com.example.retake2324_student.data.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.insert
 import org.ktorm.entity.find
@@ -66,8 +70,10 @@ class LoginActivity : ComponentActivity() {
     @Composable
     fun LoginScreen(app: App, signupEmail: String?) {
         val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
 
         var studentId by remember { mutableStateOf(-1) }
+        var student: User? by remember { mutableStateOf(null) }
         var success by remember { mutableStateOf(false) }
 
         var email by remember { mutableStateOf("") }
@@ -75,6 +81,52 @@ class LoginActivity : ComponentActivity() {
             email = signupEmail
         }
         var password by remember { mutableStateOf("") }
+
+        var isLoading by remember { mutableStateOf(false) }
+
+
+
+        LaunchedEffect(isLoading) {
+            if (isLoading) {
+
+                try {
+                    val hashedPassword = hashPassword(password)
+
+                    withContext(Dispatchers.IO) {
+                        val database = app.getDatabase()
+
+                        // email is a unique key and used as "username"
+                        student = database.sequenceOf(Schemas.Users).find { it.Mail eq email }
+                    }
+
+
+                    if (student != null) {
+                        if (student!!.password == hashedPassword) {
+                            studentId = student!!.id
+                            success = true
+                        } else {
+                            // Wrong password
+                            isLoading = false
+                        }
+                    } else {
+                        // User not found
+                        isLoading = false
+                    }
+                } catch (e: Exception) {
+                    Log.e("SUBMIT", "Error submitting file: ${e.message}")
+                    isLoading = false
+                }
+            }
+            if (success) {
+                val intent = Intent(context, DashboardActivity::class.java)
+                intent.putExtra("studentId", studentId)
+                startActivity(intent)
+            }
+
+        }
+
+
+
 
         Column(
             modifier = Modifier
@@ -102,42 +154,12 @@ class LoginActivity : ComponentActivity() {
 
             Button(
                 onClick = {
-
-
-                    // Handle submit action here
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-
-
-                            val hashedPassword = hashPassword(password)
-
-                            val database = app.getDatabase()
-
-                            // email is a unique key and used as "username"
-                            val student = database.sequenceOf(Schemas.Users).find { it.Mail eq email } !!
-
-                            if (student != User()) {
-                                if ( student.password == hashedPassword) {
-                                    studentId = student.id
-                                    success = true
-                                }
-                            }
-                        } catch (e: Exception) {
-                            Log.e("SUBMIT", "Error submitting file: ${e.message}")
-
-                        }
-                    }
-                    if (success) {
-                        val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
-                        intent.putExtra("studentId", studentId)
-                        startActivity(intent)
-                    }
-
+                          isLoading = true
                 },
+                enabled = (email.isNotEmpty() && password.isNotEmpty()),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
-                    .clickable { (email != "") and (password != "") }
             ) {
                 Text("Login")
             }
@@ -151,6 +173,11 @@ class LoginActivity : ComponentActivity() {
             ) {
                 Text("Signup")
             }
+
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            }
+
         }
     }
 }
