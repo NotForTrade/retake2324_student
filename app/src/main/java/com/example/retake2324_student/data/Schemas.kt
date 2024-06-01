@@ -1,6 +1,5 @@
 package com.example.retake2324_student.data
 
-import com.example.retake2324_student.data.Schemas.Reassessments.bindTo
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 import java.sql.CallableStatement
@@ -17,16 +16,10 @@ interface Announcement : Entity<Announcement> {
     companion object : Entity.Factory<Announcement>()
     var id: Int
     var tutor: User
-    var group: Group
+    var group: Group?
     var title: String
     var content: String
     var datetime: String
-}
-
-interface AttendanceState : Entity<AttendanceState> {
-    companion object : Entity.Factory<AttendanceState>()
-    var id:  Int
-    var value: String
 }
 
 interface Attendance : Entity<Attendance> {
@@ -35,7 +28,7 @@ interface Attendance : Entity<Attendance> {
     var tutor: User
     var student: User
     var component: Component
-    var status: AttendanceState
+    var value: String
     var session: Int
 }
 
@@ -43,10 +36,11 @@ interface Component : Entity<Component> {
     companion object : Entity.Factory<Component>()
     var id:  Int
     var module: Module
-    var tutor: User
     var name: String
     var skills: List<Skill>
     var scores: List<Score>
+    var groups: List<Group>
+    var pairs: List<TutorMapping>
 }
 
 interface Module : Entity<Module> {
@@ -65,17 +59,19 @@ interface Role : Entity<Role> {
 interface Group : Entity<Group> {
     companion object : Entity.Factory<Group>()
     var id:  Int
+    var customer: String?
     var name: String
+    var students: List<User>
 }
 
 interface User : Entity<User> {
     companion object : Entity.Factory<User>()
     var id: Int
     var role: Role
-    var group: Group
-    var module: Module
-    var component: Component
-    var photo: String
+    var group: Group?
+    var module: Module?
+    var component: Component?
+    var photo: String?
     var firstName: String
     var lastName: String
     var email: String
@@ -101,6 +97,7 @@ interface Skill : Entity<Skill> {
     var description: String
     var coefficient: Int
     var scores: List<Score>
+    var groupObservations: List<GroupObservation>
 }
 
 interface GroupObservation : Entity<GroupObservation> {
@@ -116,8 +113,8 @@ interface Score : Entity<Score> {
     var id: Int
     var student: User
     var skill: Skill
-    var value: Double
-    var observation: String
+    var value: Double?
+    var observation: String?
     var active: Boolean
     var datetime: String
 }
@@ -127,7 +124,7 @@ interface Reassessment: Entity<Reassessment> {
     var id: Int
     var student: User
     var skill: Skill
-    var score: Score
+    var score: Score?
     var document: String
     var datetime: String
     var treated: Boolean
@@ -144,14 +141,14 @@ object Schemas {
         val datetime = varchar("datetime").bindTo { it.datetime }
     }
 
-    object AttendanceStates : Table<AttendanceState>("attendance_status") {
-        val id = int("id").primaryKey().bindTo { it.id}
-        val value = varchar("value").bindTo { it.value }
-    }
 
     object Attendances : Table<Attendance>("attendance") {
         val id = int("id").primaryKey().bindTo { it.id}
+        val tutorId = int("tutor_id").references(Users) { it.tutor }
+        val studentId = int("student_id").references(Users) { it.student }
         val componentId = int("component_id").references(Components) { it.component }
+        val value = varchar("value").bindTo { it.value }
+        val session = int("session").bindTo { it.session }
     }
 
     object Roles : Table<Role>("role") {
@@ -161,11 +158,13 @@ object Schemas {
 
     object Components : Table<Component>("component") {
         val id = int("id").primaryKey().bindTo { it.id}
+        val moduleId = int("module_id").references(Modules) { it.module }
         val name = varchar("name").bindTo { it.name }
     }
 
     object Groups : Table<Group>("group") {
         val id = int("id").primaryKey().bindTo { it.id}
+        val customer = varchar("customer").bindTo { it.customer }
         val name = varchar("name").bindTo { it.name }
     }
 
@@ -202,7 +201,7 @@ object Schemas {
         val coefficient = int("coefficient").bindTo { it.coefficient }
     }
 
-    object GroupObservations : Table<GroupObservation>("group_skill_mapping") {
+    object GroupObservations : Table<GroupObservation>("group_observation") {
         val id = int("id").primaryKey().bindTo { it.id}
         val skillId = int("skill_id").references(Skills) { it.skill }
         val groupId = int("group_id").references(Groups) { it.group }

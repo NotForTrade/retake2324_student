@@ -130,7 +130,7 @@ class ProfileActivity : ComponentActivity() {
         val context = LocalContext.current
         val columnWidths = listOf(200.dp) + listOf(100.dp)
         
-        val image = Base64Image(base64String = profile.photo)
+        val image = profile.photo?.let { Base64Image(base64String = it) }
 
         Scaffold(
             topBar = { Header("Profile", app) },
@@ -159,10 +159,12 @@ class ProfileActivity : ComponentActivity() {
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-                        Text(
-                            text = if (profile.role.name == "Student") "Group: ${profile.group.name}" else "Component: ${profile.component.name}",
-                            fontSize = 16.sp
-                        )
+                        if (profile.role.name == "Student") {
+                            Text(
+                                text = profile.group?.name ?: "Not in a group.",
+                                fontSize = 16.sp
+                            )
+                        }
                         Text(
                             text = "Name: ${profile.firstName} ${profile.lastName}",
                             fontSize = 16.sp

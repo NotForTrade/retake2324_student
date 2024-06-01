@@ -70,7 +70,7 @@ class GroupSynthesisActivity : ComponentActivity() {
 
             // Fetch all the students from the user's group
             val students = withContext(Dispatchers.IO) {
-                database.sequenceOf(Schemas.Users).filter { it.groupId eq student!!.group.id }.toList()
+                database.sequenceOf(Schemas.Users).filter { it.groupId eq (student!!.group?.id ?: 0) }.toList()
             }
 
             // Fetch components data
@@ -107,8 +107,11 @@ class GroupSynthesisActivity : ComponentActivity() {
                                 var weightedScoreSum = 0.0
                                 var coefficientSum = 0.0
                                 studentScores.forEach { studentScore ->
-                                    weightedScoreSum += studentScore.value * studentScore.skill.coefficient
-                                    coefficientSum += studentScore.skill.coefficient
+                                    if (studentScore.value != null) {
+                                        weightedScoreSum += studentScore.value!! * studentScore.skill.coefficient
+                                        coefficientSum += studentScore.skill.coefficient
+                                    }
+
                                 }
                                 // Create and add a new Score object with the weighted average score for the component
                                 studentComponentScore.add(Score {
@@ -193,7 +196,7 @@ class GroupSynthesisActivity : ComponentActivity() {
                                     .padding(bottom = 8.dp)
                             ) {
                                 Text(
-                                    text = "Group: ${students[0].group.name}",
+                                    text = "Group: ${students[0].group!!.name}",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.width(columnWidths[0])
                                 )

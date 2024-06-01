@@ -114,8 +114,11 @@ class PersonalOverviewActivity : ComponentActivity() {
                                     var weightedScoreSum = 0.0
                                     var coefficientSum = 0.0
                                     studentScores.forEach { studentScore ->
-                                        weightedScoreSum += studentScore.value * studentScore.skill.coefficient
-                                        coefficientSum += studentScore.skill.coefficient
+                                        if (studentScore.value != null) {
+                                            weightedScoreSum += studentScore.value!! * studentScore.skill.coefficient
+                                            coefficientSum += studentScore.skill.coefficient
+                                        }
+
                                     }
                                     // Create and add a new Score object with the weighted average score for the component
                                     studentComponentScore.add(Score {
@@ -206,7 +209,7 @@ class PersonalOverviewActivity : ComponentActivity() {
                                     .padding(bottom = 8.dp)
                             ) {
                                 Text(
-                                    text = "Group: ${student.group.name}",
+                                    text = "Group: ${student.group!!.name}",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.width(columnWidths[0])
                                 )

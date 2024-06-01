@@ -101,11 +101,15 @@ class LoginActivity : ComponentActivity() {
 
 
                     if (student != null) {
-                        if (student!!.password == hashedPassword) {
-                            studentId = student!!.id
-                            success = true
+                        if (student!!.role.name == "Student") {
+                            if (student!!.password == hashedPassword) {
+                                studentId = student!!.id
+                                success = true
+                            } else {
+                                // Wrong password
+                                isLoading = false
+                            }
                         } else {
-                            // Wrong password
                             isLoading = false
                         }
                     } else {
