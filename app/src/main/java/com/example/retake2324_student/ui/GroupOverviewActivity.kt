@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.retake2324_student.core.App
 import com.example.retake2324_student.data.Component
+import com.example.retake2324_student.data.GroupObservation
 import com.example.retake2324_student.data.Schemas
 import com.example.retake2324_student.data.Score
 import com.example.retake2324_student.data.User
@@ -94,6 +95,13 @@ class GroupOverviewActivity : ComponentActivity() {
                         .toList()
                 }
 
+                // Fetch the group observations
+                val groupObservations = withContext(Dispatchers.IO) {
+                    database.sequenceOf(Schemas.GroupObservations)
+                        .filter { it.groupId eq (student.group?.id ?: 0) }
+                        .toList()
+                }
+
                 // Fetch scores data
                 val scores = withContext(Dispatchers.IO) {
                     database.sequenceOf(Schemas.Scores)
@@ -112,7 +120,15 @@ class GroupOverviewActivity : ComponentActivity() {
                             // attribute scores to each skills
                             component.skills.forEach { skill ->
                                 skill.scores = scores.filter { it.skill.id == skill.id }.toList()
+                                // Attribute group observations to each skills
+                                if (groupObservations.isNotEmpty()) {
+                                    val observation = groupObservations.find { it.skill.id == skill.id }
+                                    if (observation != null) {
+                                        skill.groupObservations = listOf(observation)
+                                    }
+                                }
                             }
+
                             if (students.isNotEmpty() and scores.isNotEmpty()) {
                                 // For each student, calculate their weighted average score of the currently explored component
                                 students.forEach { student ->
@@ -190,7 +206,7 @@ class GroupOverviewActivity : ComponentActivity() {
         val context = LocalContext.current
         val expandedComponents = remember { mutableStateOf(components.map { it.id }.toSet()) }
 
-        val columnWidths = listOf(200.dp) + List(students.size) { 100.dp }
+        val columnWidths = listOf(100.dp) + List(students.size +1 ) { 100.dp }
 
         Scaffold(
             topBar = { Header("Group Overview", app) },
@@ -219,9 +235,15 @@ class GroupOverviewActivity : ComponentActivity() {
                                     .padding(bottom = 8.dp)
                             ) {
                                 Text(
-                                    text = "Group: ${students[0].group!!.name}",
+                                    text = "Components",
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.width(columnWidths[0])
+                                )
+
+                                Text(
+                                    text = students[0].group?.name ?: "No group",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.width(columnWidths[1])
                                 )
                                 students.forEachIndexed { index, student ->
                                     Text(
@@ -246,7 +268,7 @@ class GroupOverviewActivity : ComponentActivity() {
                                         .padding(vertical = 4.dp)
                                 ) {
                                     Text(
-                                        text = "Component: ${component.name}",
+                                        text = component.name,
                                         style = MaterialTheme.typography.titleSmall,
                                         modifier = Modifier
                                             .width(columnWidths[0])
@@ -257,6 +279,11 @@ class GroupOverviewActivity : ComponentActivity() {
                                                     expandedComponents.value + component.id
                                                 }
                                             }
+                                    )
+                                    Text(
+                                        text = "",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.width(columnWidths[1])
                                     )
                                     students.forEachIndexed { index, student ->
                                         val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
@@ -277,7 +304,7 @@ class GroupOverviewActivity : ComponentActivity() {
                                                 .padding(top = 2.dp, bottom = 2.dp)
                                         ) {
                                             Text(
-                                                text = "Skill: ${skill.name}",
+                                                text = skill.name,
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 modifier = Modifier
                                                     .width(columnWidths[0])
@@ -291,6 +318,12 @@ class GroupOverviewActivity : ComponentActivity() {
                                                         }
                                                         context.startActivity(intent)
                                                     }
+                                            )
+                                            Text(
+                                                text = if (skill.groupObservations.isNotEmpty()) skill.groupObservations[0].observation else "No Group observation",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                modifier = Modifier
+                                                    .width(columnWidths[1])
                                             )
                                             students.forEachIndexed { index, student ->
                                                 val skillScore = skill.scores.find { it.student.id == student.id }?.value ?: 0.0
