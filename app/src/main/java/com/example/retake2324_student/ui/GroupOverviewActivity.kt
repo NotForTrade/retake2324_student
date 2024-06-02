@@ -286,9 +286,9 @@ class GroupOverviewActivity : ComponentActivity() {
                                         modifier = Modifier.width(columnWidths[1])
                                     )
                                     students.forEachIndexed { index, student ->
-                                        val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                        val score = component.scores.find { it.student.id == student.id }?.value
                                         Text(
-                                            text = "$score",
+                                            text = score?.toString() ?: "-",
                                             style = MaterialTheme.typography.titleSmall,
                                             modifier = Modifier.width(columnWidths[index + 1])
                                         )
@@ -326,9 +326,9 @@ class GroupOverviewActivity : ComponentActivity() {
                                                     .width(columnWidths[1])
                                             )
                                             students.forEachIndexed { index, student ->
-                                                val skillScore = skill.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                                val skillScore = skill.scores.find { it.student.id == student.id }?.value
                                                 Text(
-                                                    text = "$skillScore",
+                                                    text = skillScore?.toString() ?: "-",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     modifier = Modifier.width(columnWidths[index + 1])
                                                 )

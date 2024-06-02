@@ -172,7 +172,10 @@ class ProfileActivity : ComponentActivity() {
                         Text(
                             text = "Email: ${profile.email}",
                             fontSize = 16.sp,
-                            modifier = Modifier.clickable { }
+                            modifier = Modifier.clickable {
+
+
+                            }
                         )
                     }
                     if (image != null) {

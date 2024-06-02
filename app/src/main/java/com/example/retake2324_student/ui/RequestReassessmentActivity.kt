@@ -1,5 +1,6 @@
 package com.example.retake2324_student.ui
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -180,6 +181,7 @@ class RequestReassessmentActivity : ComponentActivity() {
         var skillsBoxExpanded by remember { mutableStateOf(false) }
 
 
+
         Scaffold(
             topBar = { Header("Request Reassessment", app) },
             bottomBar = { Footer(studentId) }
@@ -330,7 +332,13 @@ class RequestReassessmentActivity : ComponentActivity() {
                         text = { Text(dialogMessage) },
                         confirmButton = {
                             Button(
-                                onClick = { showDialog = false }
+                                onClick = {
+                                    showDialog = false
+                                    val intent = Intent(context, RequestReassessmentActivity::class.java)
+                                    intent.putExtra("studentId", studentId)
+                                    startActivity(intent)
+
+                                }
                             ) {
                                 Text("Ok")
                             }

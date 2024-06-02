@@ -228,9 +228,9 @@ class GroupSynthesisActivity : ComponentActivity() {
                                             .width(columnWidths[0])
                                     )
                                     students.forEachIndexed { index, student ->
-                                        val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                        val score = component.scores.find { it.student.id == student.id }?.value
                                         Text(
-                                            text = "$score",
+                                            text = score?.toString() ?: "-",
                                             style = MaterialTheme.typography.titleSmall,
                                             modifier = Modifier.width(columnWidths[index + 1])
                                         )

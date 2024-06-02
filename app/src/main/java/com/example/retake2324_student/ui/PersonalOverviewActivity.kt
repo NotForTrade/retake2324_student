@@ -244,9 +244,9 @@ class PersonalOverviewActivity : ComponentActivity() {
                                                 }
                                             }
                                     )
-                                    val score = component.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                    val score = component.scores.find { it.student.id == student.id }?.value
                                     Text(
-                                        text = "$score",
+                                        text = score?.toString() ?: "-",
                                         style = MaterialTheme.typography.titleSmall,
                                         modifier = Modifier.width(columnWidths[1])
                                     )
@@ -276,9 +276,9 @@ class PersonalOverviewActivity : ComponentActivity() {
                                                         context.startActivity(intent)
                                                     }
                                             )
-                                            val skillScore = skill.scores.find { it.student.id == student.id }?.value ?: 0.0
+                                            val skillScore = skill.scores.find { it.student.id == student.id }?.value
                                             Text(
-                                                text = "$skillScore",
+                                                text = skillScore?.toString() ?: "-",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 modifier = Modifier.width(columnWidths[1])
                                             )
